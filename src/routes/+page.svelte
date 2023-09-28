@@ -1,20 +1,100 @@
+<!--<!DOCTYPE html >-->
+<!--<html>-->
+<!--<head>-->
+<!--    <title>Votre Page</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<main>-->
+<!--    <h1>Formulaire de validation</h1>-->
+
+<!--    <form action="/api/save-data" method="POST">-->
+<!--        <div>-->
+<!--            <label for="inputQuestion">Question :</label>-->
+<!--            <input type="text" id="inputQuestion" name="question">-->
+<!--        </div>-->
+
+<!--        <div>-->
+<!--            <label for="inputAnswer">Réponse :</label>-->
+<!--            <input type="text" id="inputAnswer" name="answer">-->
+<!--        </div>-->
+
+<!--        <button type="submit">Valider</button>-->
+<!--    </form>-->
+
+<!--</main>-->
+
+<!--<script>-->
+<!--    let inputQuestion = '';-->
+<!--    let inputAnswer = '';-->
+
+<!--    async function sendData() {-->
+<!--        const response = await fetch('/api/save-data', {-->
+<!--            method: 'POST',-->
+<!--            headers: {-->
+<!--                'Content-Type': 'application/json',-->
+<!--            },-->
+<!--            body: JSON.stringify({question: inputQuestion, answer: inputAnswer}),-->
+<!--        });-->
+<!--        if (response.ok) {-->
+<!--            console.log("Data send with success");-->
+<!--        } else {-->
+<!--            console.log("Error HTTP: " + response.status);-->
+<!--        }-->
+<!--    }-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
 
 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Votre Page</title>
+</head>
+<body>
 <main>
     <h1>Formulaire de validation</h1>
 
-    <div>
-        <label for="inputQuestion">Question :</label>
-        <input type="text"  id="inputQuestion" name="inputQuestion">
-    </div>
+    <form id="dataForm">
+        <div>
+            <label for="inputQuestion">Question :</label>
+            <input type="text" id="inputQuestion" name="question">
+        </div>
 
-    <div>
-        <label for="inputAnswer">Réponse :</label>
-        <input type="text"  id="inputAnswer" name="inputAnswer">
-    </div>
+        <div>
+            <label for="inputAnswer">Réponse :</label>
+            <input type="text" id="inputAnswer" name="answer">
+        </div>
 
-    <button id="submitButton">Valider</button>
+        <button type="button" onclick="sendData()">Valider</button>
+    </form>
+
 </main>
+
+<script>
+    async function sendData() {
+        const form = document.getElementById('dataForm');
+        const formData = new FormData(form);
+        const inputQuestion = formData.get('question');
+        const inputAnswer = formData.get('answer');
+
+        const response = await fetch('/api/save-data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ question: inputQuestion, answer: inputAnswer }),
+        });
+        if (response.ok) {
+            console.log("Data send with success");
+        } else {
+            console.log("Error HTTP: " + response.status);
+        }
+    }
+</script>
+</body>
+</html>
+
 
 
 <style>
@@ -48,28 +128,3 @@
 </style>
 
 
-<!--<script>-->
-<!--    let inputQuestion ='';-->
-<!--    let inputAnswer = '';-->
-<!--    const submitButton = document.getElementById('submitButton');-->
-
-
-<!--    submitButton.addEventListener('click', sendData);-->
-<!--    async function sendData() {-->
-<!--        console.log("test");-->
-
-<!--        const response = await fetch('/api/save-data', {-->
-<!--            method: 'POST',-->
-<!--            headers: {-->
-<!--                'Content-Type': 'application/json',-->
-<!--            },-->
-<!--            body: JSON.stringify({question: inputQuestion, answer: inputAnswer}),-->
-<!--        });-->
-<!--        if (response.ok) {-->
-<!--            alert("Data send with success"); //remplacer par un console.log-->
-<!--        } else {-->
-<!--            alert("Error HTTP: " + response.status); //remplacer par un console.log-->
-<!--        }-->
-
-<!--    }-->
-<!--</script>-->

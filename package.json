@@ -9,6 +9,9 @@
 		"prepublishOnly": "npm run package",
 		"studio": "npx prisma studio"
 	},
+	"prisma": {
+		"seed": "node prisma/seed.js"
+	},
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
