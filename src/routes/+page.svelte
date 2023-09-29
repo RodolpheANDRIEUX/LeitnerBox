@@ -1,101 +1,26 @@
-<!--<!DOCTYPE html >-->
-<!--<html>-->
-<!--<head>-->
-<!--    <title>Votre Page</title>-->
-<!--</head>-->
-<!--<body>-->
-<!--<main>-->
-<!--    <h1>Formulaire de validation</h1>-->
+<!--@todo : notification pour confirmer la création de la carte-->
+<!--@todo : utiliser des prefetch onmouseover https://kit.svelte.dev/docs/link-options  https://www.youtube.com/watch?v=EQy-AYhZIlE&ab_channel=Huntabyte-->
 
-<!--    <form action="/api/save-data" method="POST">-->
-<!--        <div>-->
-<!--            <label for="inputQuestion">Question :</label>-->
-<!--            <input type="text" id="inputQuestion" name="question">-->
-<!--        </div>-->
+<script>
 
-<!--        <div>-->
-<!--            <label for="inputAnswer">Réponse :</label>-->
-<!--            <input type="text" id="inputAnswer" name="answer">-->
-<!--        </div>-->
-
-<!--        <button type="submit">Valider</button>-->
-<!--    </form>-->
-
-<!--</main>-->
-
-<!--<script>-->
-<!--    let inputQuestion = '';-->
-<!--    let inputAnswer = '';-->
-
-<!--    async function sendData() {-->
-<!--        const response = await fetch('/api/save-data', {-->
-<!--            method: 'POST',-->
-<!--            headers: {-->
-<!--                'Content-Type': 'application/json',-->
-<!--            },-->
-<!--            body: JSON.stringify({question: inputQuestion, answer: inputAnswer}),-->
-<!--        });-->
-<!--        if (response.ok) {-->
-<!--            console.log("Data send with success");-->
-<!--        } else {-->
-<!--            console.log("Error HTTP: " + response.status);-->
-<!--        }-->
-<!--    }-->
-<!--</script>-->
-<!--</body>-->
-<!--</html>-->
+</script>
 
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Votre Page</title>
-</head>
-<body>
 <main>
     <h1>Formulaire de validation</h1>
 
-    <form id="dataForm">
-        <div>
+    <form method="post">
+
             <label for="inputQuestion">Question :</label>
             <input type="text" id="inputQuestion" name="question">
-        </div>
 
-        <div>
+
             <label for="inputAnswer">Réponse :</label>
-            <input type="text" id="inputAnswer" name="answer">
-        </div>
+            <input autocomplete="off" type="text" id="inputAnswer" name="answer">
 
-        <button type="button" onclick="sendData()">Valider</button>
+        <button type="submit">Valider</button>
     </form>
-
 </main>
-
-<script>
-    async function sendData() {
-        const form = document.getElementById('dataForm');
-        const formData = new FormData(form);
-        const inputQuestion = formData.get('question');
-        const inputAnswer = formData.get('answer');
-
-        const response = await fetch('/api/save-data', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ question: inputQuestion, answer: inputAnswer }),
-        });
-        if (response.ok) {
-            console.log("Data send with success");
-        } else {
-            console.log("Error HTTP: " + response.status);
-        }
-    }
-</script>
-</body>
-</html>
-
-
 
 <style>
     main {
@@ -126,5 +51,3 @@
         background-color: #0056b3;
     }
 </style>
-
-
