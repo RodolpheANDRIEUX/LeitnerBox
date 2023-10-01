@@ -1,4 +1,7 @@
 <script>
+    import { lightMode } from './store.js';
+    import { onMount, onDestroy } from 'svelte';
+
     let answer = "";
     let isAnimating = false;
 
@@ -7,7 +10,7 @@
     let rotation = 0;
     let targetTranslateX = 0;
     let targetTranslateY = 0;
-    let currentTranslateX = 0;
+    let currentTranslateX = -50;
     let currentTranslateY = 0;
     let initialTranslateX = 0;
     let initialTranslateY = 0;
@@ -16,10 +19,22 @@
     const duration = 400;
     let startTime;
 
+    onMount(() => {
+
+        document.body.addEventListener('mousemove', handleMouseMove);
+        document.body.addEventListener('click', click);
+        onDestroy(() => {
+            document.body.removeEventListener('mousemove', handleMouseMove);
+            document.body.removeEventListener('click', click);
+        });
+    });
+
+
     function easeInBack(t) {
         let jump = (-initialTranslateY + 50) * 0.02;
         return t * ((jump + 1) * t - jump);
     }
+
 
     function animate(timestamp) {
         if (!startTime) startTime = timestamp;
@@ -35,7 +50,14 @@
             requestAnimationFrame(animate);
         } else {
             startTime = null;
+            requestAnimationFrame(newCard)
+            isAnimating = false
         }
+    }
+
+
+    function newCard(timestamp) {
+
     }
 
     function handleMouseMove(event) {
@@ -54,37 +76,30 @@
         answer = percentageX > 0.5 ? "I am too lazy..." : "It's me, sir!";
     }
 
+
     function click(event){
+        if (event.clientY <= 70) return;
         if(isAnimating) return;
+        isAnimating = true;
+
         const screenWidth = window.innerWidth;
         const mouseX = event.clientX;
         const percentageX = 1 - (mouseX / screenWidth);
 
-        percentageX > 0.5 ? swapLeft() : swapRight()
-    }
-
-    function swapLeft(){
-        isAnimating = true;
         initialRotation = rotation;
         initialTranslateX = currentTranslateX;
         initialTranslateY = currentTranslateY;
         targetTranslateX = -50 + ((currentTranslateX + 50) * 8);
-        console.log(currentTranslateY);
         targetTranslateY = 600;
+
+        percentageX > 0.5 ? swapLeft() : swapRight()
         requestAnimationFrame(animate);
-        isAnimating = false
+    }
+
+    function swapLeft(){
     }
 
     function swapRight(){
-        isAnimating = true;
-        initialRotation = rotation;
-        initialTranslateX = currentTranslateX;
-        initialTranslateY = currentTranslateY;
-        targetTranslateX = -50 + ((currentTranslateX + 50) * 8) ;
-        console.log(currentTranslateX);
-        targetTranslateY = 600;
-        requestAnimationFrame(animate);
-        isAnimating = false;
     }
 
     function easeInOut(t) {
@@ -97,23 +112,23 @@
 
 </script>
 
-<div class="card" id="cardShadow"></div>
-<div class="card" id="cardframe" style="transform: translate({currentTranslateX}%, {currentTranslateY}px) rotate({-rotation}deg);">
-    <div id="goggins"></div>
-    <div id="answerOverlay" style="transform: translate(-25%, {-100+(Math.abs(rotation*3))}%) rotate({rotation}deg);">
-        <span id="answer" style="transform: translate({-50}%, 0);">{answer}</span>
+<div id="cardDeck" class={$lightMode ? "light-mode card" : "card"}></div>
+
+<div id="outer-card">
+    <div class="card" id="cardframe" style="transform: translate({currentTranslateX}%, {currentTranslateY}px) rotate({-rotation}deg);">
+        <div id="front">
+            <div id="goggins"></div>
+            <div id="answerOverlay" style="transform: translate(-25%, {-100+(Math.abs(rotation*3))}%) rotate({rotation}deg);">
+                <span id="answer" style="transform: translate({-50}%, 0);">{answer}</span>
+            </div>
+        </div>
+        <div id="back">
+            <div id="backCard" class={$lightMode ? "light-mode card" : "card"}></div>
+        </div>
     </div>
 </div>
-<div id="window" role="presentation" on:mousemove={handleMouseMove} on:click={click}></div>
 
 <style>
-    #window{
-        position: fixed;
-        width: 100vw;
-        height: 100vh;
-        top: 0;
-        left: 0;
-    }
 
     .card {
         position: fixed;
@@ -124,10 +139,19 @@
         bottom: 15%;
         transform: translate(-50%, 0);
         transition: 50ms;
+        z-index: 9;
     }
 
-    #cardShadow{
+    .card:hover{
+        transform: rotateY(180deg);
+    }
+
+    #cardDeck{
         background: #131313;
+    }
+
+    .light-mode#cardDeck {
+        background: #e1e1e1;
     }
 
     #cardframe{
@@ -152,6 +176,7 @@
         background: #00000050;
         transition: 50ms;
         text-align: center;
+        color: #fff;
     }
 
     span{

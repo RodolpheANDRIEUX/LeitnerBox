@@ -1,4 +1,8 @@
-<div id="bg"></div>
+<script>
+import {lightMode} from "./store.js";
+</script>
+
+<div id="bg" class={$lightMode ? "light-mode" : ""}></div>
 <div id="progress"></div>
 
 <style>
@@ -12,6 +16,10 @@
     #bg {
         background: #131313;
         width: 100vw;
+    }
+
+    #bg.light-mode{
+        background: #e1e1e1;
     }
 
     #progress {

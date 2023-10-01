@@ -53,14 +53,20 @@ table {
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     background-color: #1e1e1e;
-    color: #eeeeee;
+    color: #ffffff;
     height: 100vh;
+    transition: .3s ease;
+}
+
+body.light-mode {
+    background-color: #ffffff;
+    color: #1e1e1e;
 }
 
 a {
     text-decoration: none;
     color: #007BFF;
-    transition: color 0.3s ease;
+    transition: color .3s ease;
 }
 
 a:hover {

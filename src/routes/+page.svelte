@@ -1,7 +1,7 @@
 <script>
-    import Header from "./header.svelte";
     import Progress from "./progress.svelte";
     import Card from "./card.svelte";
+    import { lightMode } from './store.js';
 
     function handleMouseMove(event) {
         const screenHeight = window.innerHeight;
@@ -14,14 +14,17 @@
 
 </script>
 
-<Header />
-<div id="question">Who's gonna carry the Boats ?</div>
-<Card />
-<Progress />
+<div id="core">
+    <div id="question">Who's gonna carry the Boats ?</div>
+    <Card />
+    <Progress />
+</div>
+
+
 
 <style>
     #question{
-        padding: 130px 25% 20px 25%;
+        padding: 40px 25% 20px 25%;
         text-align: center;
         font-size: 2rem;
     }
