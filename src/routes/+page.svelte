@@ -1,13 +1,27 @@
 <!--@todo : notification pour confirmer la création de la carte-->
 <!--@todo : utiliser des prefetch onmouseover https://kit.svelte.dev/docs/link-options  https://www.youtube.com/watch?v=EQy-AYhZIlE&ab_channel=Huntabyte-->
-
 <script>
-
+export let cards = [];
+console.log(cards.answer);
 </script>
+
 
 
 <main>
     <h1>Formulaire de validation</h1>
+
+    {#if cards}
+        {#each cards as { question, answer }}
+            <div>
+                <h2>Carte</h2>
+                <p>Question : {question}</p>
+                <p>Réponse : {answer}</p>
+            </div>
+        {/each}
+    {:else}
+        <p>Loading cards...</p>
+    {/if}
+
 
     <form method="post">
 
