@@ -1,27 +1,36 @@
-// @todo faire une fonction load pour afficher les cards
-
 import {Prisma} from "@prisma/client";
 import {db} from '$lib/db';
 
-export const load = async () => {
-    const cards = await db.cards.findMany(
-        {where: {id: 1}}
-    );
-    console.log("cards", cards)
-    return {cards}
+export function load() {
+    // console.log(db.cards);
+    const cards = db.cards.findMany()
+
+//     const cards = [
+//             {
+//                 question: 'Quelle est la capitale de la France ?',
+//                 answer: 'Paris'
+//             },
+//     {
+//         question: 'Quelle est la racine carrée de 16 ?',
+//         answer: '4'
+//     },
+//     {
+//         question: 'Qui a écrit "Romeo et Juliette" ?',
+//         answer: 'William Shakespeare'
+//     }
+// ];
+    return {cards};
 }
 
 export const actions = {
     default: async (request) => {
         const data = await request.request.formData();
-        const answer = data.get('answer');
-        const question = data.get('question');
-
         try {
             const createdCard = await db.cards.create({
                 data: {
-                    question: question,
-                    answer: answer
+                    answer: data.get('answer'),
+                    question: data.get('question'),
+                    userId: 1
                 }
             })
             console.log("Card created", createdCard) //debug
@@ -38,6 +47,5 @@ export const actions = {
                 body: {error: true, message: 'An unknown error occurred'}
             };
         }
-
     }
 }
