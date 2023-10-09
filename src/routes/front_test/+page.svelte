@@ -1,3 +1,8 @@
+<script>
+    import { fade } from 'svelte/transition';
+    let visible = true;
+    let text = 'Hello, world!';
+</script>
 
 <div id="randomParent">
 
@@ -11,7 +16,21 @@
     </div>
 </div>
 
+<button on:click={() => {
+  visible = false;
+  setTimeout(() => {
+    text = text === 'Hello, world!' ? 'Goodbye!' : 'Hello, world!';
+    visible = true;
+  }, 300);
+}}>
+    Change Text
+</button>
 
+{#if visible}
+    <p transition:fade={{ duration: 300, easing: t => --t*t*t+1 }}>
+        {text}
+    </p>
+{/if}
 
 <style>
     #randomParent{

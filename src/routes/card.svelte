@@ -1,7 +1,10 @@
 <script>
-    import { lightMode } from './store.js';
+    import {isQuestionVisible, lightMode, questionIndex} from './store.js';
     import { onMount, onDestroy } from 'svelte';
+    import { createEventDispatcher } from 'svelte';
+    export let data;
 
+    const dispatch = createEventDispatcher();
     let answer = "";
     let isAnimating = false;
 
@@ -20,21 +23,14 @@
     let startTime;
 
     onMount(() => {
-
         document.body.addEventListener('mousemove', handleMouseMove);
         document.body.addEventListener('click', click);
-        onDestroy(() => {
-            document.body.removeEventListener('mousemove', handleMouseMove);
-            document.body.removeEventListener('click', click);
-        });
     });
-
 
     function easeInBack(t) {
         let jump = (-initialTranslateY + 50) * 0.02;
         return t * ((jump + 1) * t - jump);
     }
-
 
     function animate(timestamp) {
         if (!startTime) startTime = timestamp;
@@ -50,6 +46,7 @@
             requestAnimationFrame(animate);
         } else {
             startTime = null;
+            nextCard();
             requestAnimationFrame(newCard)
             isAnimating = false
         }
@@ -73,7 +70,7 @@
         currentTranslateY = (mouseY / screenHeight)*100 -50;
         rotation = lerp(-50, 50, percentageX) / 3.5;
 
-        answer = percentageX > 0.5 ? "I am too lazy..." : "It's me, sir!";
+        answer = percentageX > 0.5 ? "I don't know" : "I know !";
     }
 
 
@@ -94,6 +91,15 @@
 
         percentageX > 0.5 ? swapLeft() : swapRight()
         requestAnimationFrame(animate);
+    }
+
+    function nextCard(){
+        if ($questionIndex >= data.cards.length) return;
+        isQuestionVisible.set(false);
+        setTimeout(() => {
+            questionIndex.set($questionIndex+1);
+            isQuestionVisible.set(true);
+        }, 300);
     }
 
     function swapLeft(){

@@ -1,26 +1,21 @@
 <script>
     import Progress from "./progress.svelte";
     import Card from "./card.svelte";
-    import { lightMode } from './store.js';
+    import { fade } from 'svelte/transition';
+    import {isQuestionVisible, questionIndex} from "./store.js";
 
-    function handleMouseMove(event) {
-        const screenHeight = window.innerHeight;
-        const mouseY = event.clientY;
+    export let data;
 
-        const percentage = 100 - (mouseY / screenHeight) * 100;
-
-        let progressWidth = `${percentage}%`;
-    }
-
+    let visible = true;
 </script>
 
 <div id="core">
-    <div id="question">Who's gonna carry the Boats ?</div>
-    <Card />
-    <Progress />
+    {#if $isQuestionVisible && $questionIndex < data.cards.length}
+        <div id="question" transition:fade={{ duration: 300, easing: t => --t*t*t+1 }} >{data.cards[$questionIndex].question}</div>
+    {/if}
+    <Card {data}/>
+    <Progress {data}/>
 </div>
-
-
 
 <style>
     #question{

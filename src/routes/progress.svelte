@@ -1,9 +1,14 @@
 <script>
-import {lightMode} from "./store.js";
+    import {lightMode, questionIndex} from "./store.js";
+
+    export let data;
+
+    const total = data.cards.length;
+    $: progressWidth = ($questionIndex / total) * 100;
 </script>
 
 <div id="bg" class={$lightMode ? "light-mode" : ""}></div>
-<div id="progress"></div>
+<div id="progress"  style="width: {progressWidth}%;"></div>
 
 <style>
     * {
@@ -24,6 +29,6 @@ import {lightMode} from "./store.js";
 
     #progress {
         background: #ff0000;
-        width: 50%;
+        transition: width 0.3s ease-in-out;
     }
 </style>
