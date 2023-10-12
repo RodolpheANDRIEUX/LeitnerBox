@@ -17,7 +17,7 @@
     let Xrotation = 0;
     let targetTranslateX = 0;
     let targetTranslateY = 0;
-    let targetrotation = 0;
+    let targetRotation = 0;
     let currentTranslateX = -45;
     let currentTranslateY = 10;
     let initialTranslateX = 0;
@@ -67,8 +67,8 @@
         const screenHeight = window.innerHeight;
         const screenWidth = window.innerWidth;
         const percentageX = 1 - (mouseX / screenWidth);
-        targetrotation = lerp(-50, 50, percentageX) / 3.5;
-        targetTranslateX = -50 - targetrotation * 2;
+        targetRotation = lerp(-50, 50, percentageX) / 3.5;
+        targetTranslateX = -50 - targetRotation * 2;
         targetTranslateY = (mouseY / screenHeight)*100 -50;
 
         const elapsed = timestamp - startTime;
@@ -77,7 +77,7 @@
 
         Yrotation = 180 + (easeInOut(progress) * 180)
         if ( progress < 0.5 ){
-            initialRotation = targetrotation * easeInOut(progress*2) * -1;
+            initialRotation = targetRotation * easeInOut(progress*2) * -1;
             initialTranslateX =  -50 + 30 * easeInOut(progress*2) * -2;
             initialTranslateY =  50 * easeInOut(progress*2);
             Xrotation = XrotMovement * easeInOut(progress*2);
@@ -87,7 +87,7 @@
         } else {
             let progressSecondPart = (progress - 0.5) * 2
             Xrotation = XrotMovement - XrotMovement * easeInOut(progressSecondPart);
-            rotation = initialRotation + (targetrotation - initialRotation) * easeInOut(progressSecondPart);
+            rotation = initialRotation + (targetRotation - initialRotation) * easeInOut(progressSecondPart);
             currentTranslateX = initialTranslateX + (targetTranslateX - initialTranslateX) * easeInOut(progressSecondPart);
             currentTranslateY = initialTranslateY + (targetTranslateY - initialTranslateY) * easeInOut(progressSecondPart);
         }
