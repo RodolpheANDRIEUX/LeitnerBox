@@ -4,15 +4,19 @@
     import { createEventDispatcher } from 'svelte';
     export let data;
 
-    const dispatch = createEventDispatcher();
     let answer = "";
     let isAnimating = false;
+    let isVisible = true;
+    let mouseX;
+    let mouseY;
 
     // cardframe
     let initialRotation = 0;
     let rotation = 0;
+    let Yrotation = 0;
     let targetTranslateX = 0;
     let targetTranslateY = 0;
+    let targetrotation = 0;
     let currentTranslateX = -50;
     let currentTranslateY = 0;
     let initialTranslateX = 0;
@@ -26,11 +30,6 @@
         document.body.addEventListener('mousemove', handleMouseMove);
         document.body.addEventListener('click', click);
     });
-
-    function easeInBack(t) {
-        let jump = (-initialTranslateY + 50) * 0.02;
-        return t * ((jump + 1) * t - jump);
-    }
 
     function animate(timestamp) {
         if (!startTime) startTime = timestamp;
@@ -47,22 +46,62 @@
         } else {
             startTime = null;
             nextCard();
+            isVisible = false;
+            resetCardPos();
             requestAnimationFrame(newCard)
+        }
+    }
+
+    function resetCardPos() {
+        rotation = 0;
+        Yrotation = 180;
+        currentTranslateX = -50;
+        currentTranslateY = 0;
+    }
+
+    function newCard(timestamp) {
+        isVisible = true;
+        if (!startTime) startTime = timestamp;
+
+        const screenHeight = window.innerHeight;
+        const screenWidth = window.innerWidth;
+        const percentageX = 1 - (mouseX / screenWidth);
+        targetrotation = lerp(-50, 50, percentageX) / 3.5;
+        targetTranslateX = -50 - targetrotation * 2;
+        targetTranslateY = (mouseY / screenHeight)*100 -50;
+
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        Yrotation = 180 + (easeInOut(progress) * 180)
+        if ( progress < 0.5 ){
+            initialRotation = targetrotation * easeInOut(progress*2) * -1;
+            initialTranslateX =  -50 + (targetTranslateX + 50)  * easeInOut(progress*2) * -2;
+            initialTranslateY =  targetTranslateY * easeInOut(progress*2) * -2;
+            rotation = initialRotation
+            currentTranslateX =  initialTranslateX;
+            currentTranslateY =  initialTranslateY;
+        } else {
+            let progressSecondPart = (progress - 0.5) * 2
+            rotation = initialRotation + (targetrotation - initialRotation) * easeInOut(progressSecondPart);
+            currentTranslateX = initialTranslateX + (targetTranslateX - initialTranslateX) * easeInOut(progressSecondPart);
+            currentTranslateY = initialTranslateY + (targetTranslateY - initialTranslateY) * easeInOut(progressSecondPart);
+        }
+
+        if (progress < 1) {
+            requestAnimationFrame(newCard);
+        } else {
+            startTime = null;
             isAnimating = false
         }
     }
 
-
-    function newCard(timestamp) {
-
-    }
-
     function handleMouseMove(event) {
+        mouseX = event.clientX;
+        mouseY = event.clientY;
         if(isAnimating) return;
         const screenHeight = window.innerHeight;
         const screenWidth = window.innerWidth;
-        const mouseX = event.clientX;
-        const mouseY = event.clientY;
 
         const percentageX = 1 - (mouseX / screenWidth);
 
@@ -109,32 +148,46 @@
     }
 
     function easeInOut(t) {
-        return t * t * t * (6 * t * t - 15 * t + 10);
+        return 0.5 - Math.cos(t * Math.PI) / 2;
     }
 
     function lerp(a, b, t) {
         return a + easeInOut(t) * (b - a);
     }
 
+    function easeInBack(t) {
+        let jump = (-initialTranslateY + 50) * 0.02;
+        return t * ((jump + 1) * t - jump);
+    }
 </script>
 
 <div id="cardDeck" class={$lightMode ? "light-mode card" : "card"}></div>
 
-<div id="outer-card">
-    <div class="card" id="cardframe" style="transform: translate({currentTranslateX}%, {currentTranslateY}px) rotate({-rotation}deg);">
-        <div id="front">
-            <div id="goggins"></div>
-            <div id="answerOverlay" style="transform: translate(-25%, {-100+(Math.abs(rotation*3))}%) rotate({rotation}deg);">
-                <span id="answer" style="transform: translate({-50}%, 0);">{answer}</span>
+{#if isVisible}
+    <div id="outer-card">
+        <div class="card" id="cardframe" style="transform: translate({currentTranslateX}%, {currentTranslateY}px) rotate({-rotation}deg) rotateY({Yrotation}deg);">
+            <div id="front">
+                <div id="goggins"></div>
+                <div id="answerOverlay" style="transform: translate(-25%, {-100+(Math.abs(rotation*3))}%) rotate({rotation}deg);">
+                    <span id="answer" style="transform: translate({-50}%, 0);">{answer}</span>
+                </div>
+            </div>
+            <div id="back">
+                <div id="backCard" class={$lightMode ? "light-mode card" : "card"}></div>
             </div>
         </div>
-        <div id="back">
-            <div id="backCard" class={$lightMode ? "light-mode card" : "card"}></div>
-        </div>
     </div>
-</div>
+{/if}
+
 
 <style>
+    #outer-card{
+        position: fixed;
+        top: 0;
+        height: 100vh;
+        width: 100vw;
+        perspective: 500px;
+    }
 
     .card {
         position: fixed;
@@ -144,12 +197,27 @@
         left: 50%;
         bottom: 15%;
         transform: translate(-50%, 0);
-        transition: 50ms;
-        z-index: 9;
+        transition: 50ms ease-out;
     }
 
-    .card:hover{
+    #front,
+    #back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+    }
+
+    #front{
+        transform: rotateY(0deg);
+        overflow: hidden;
+        border-radius: 3vh;
+    }
+
+    #back{
         transform: rotateY(180deg);
+        background: #131313;
+        border-radius: 3vh;
     }
 
     #cardDeck{
@@ -161,16 +229,15 @@
     }
 
     #cardframe{
-        position: fixed;
-        overflow: hidden;
+        transform-style: preserve-3d;
     }
 
     #goggins{
-        position: absolute;
         height: 100%;
         width: 100%;
         background: url("https://www.babelio.com/users/AVT_David-Goggins_4998.jpg");
         background-size: cover;
+        backface-visibility: hidden;
     }
 
     #answerOverlay{

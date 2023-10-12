@@ -47,14 +47,14 @@
         transform-style: preserve-3d;
     }
 
-    .card-inner {
-        width: 100%;
-        height: 100%;
-        position: relative;
-        transform-style: preserve-3d;
-        transition: transform 0.999s;
-        border: dashed green 2px;
-    }
+    /*.card-inner {*/
+    /*    width: 100%;*/
+    /*    height: 100%;*/
+    /*    position: relative;*/
+    /*    transform-style: preserve-3d;*/
+    /*    transition: transform 0.999s;*/
+    /*    border: dashed green 2px;*/
+    /*}*/
 
     .card:hover {
         transform: rotateY(180deg);
@@ -71,6 +71,7 @@
     .card-front {
         background-color: #6A2C70;
         transform: rotateY(0deg);
+        overflow: hidden;
     }
 
     .card-back {
