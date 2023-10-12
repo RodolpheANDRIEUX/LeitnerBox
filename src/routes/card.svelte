@@ -14,11 +14,12 @@
     let initialRotation = 0;
     let rotation = 0;
     let Yrotation = 0;
+    let Xrotation = 0;
     let targetTranslateX = 0;
     let targetTranslateY = 0;
     let targetrotation = 0;
-    let currentTranslateX = -50;
-    let currentTranslateY = 0;
+    let currentTranslateX = -45;
+    let currentTranslateY = 10;
     let initialTranslateX = 0;
     let initialTranslateY = 0;
 
@@ -72,17 +73,20 @@
 
         const elapsed = timestamp - startTime;
         const progress = Math.min(elapsed / duration, 1);
+        const XrotMovement = 60;
 
         Yrotation = 180 + (easeInOut(progress) * 180)
         if ( progress < 0.5 ){
             initialRotation = targetrotation * easeInOut(progress*2) * -1;
-            initialTranslateX =  -50 + (targetTranslateX + 50)  * easeInOut(progress*2) * -2;
-            initialTranslateY =  targetTranslateY * easeInOut(progress*2) * -2;
+            initialTranslateX =  -50 + 30 * easeInOut(progress*2) * -2;
+            initialTranslateY =  50 * easeInOut(progress*2);
+            Xrotation = XrotMovement * easeInOut(progress*2);
             rotation = initialRotation
             currentTranslateX =  initialTranslateX;
             currentTranslateY =  initialTranslateY;
         } else {
             let progressSecondPart = (progress - 0.5) * 2
+            Xrotation = XrotMovement - XrotMovement * easeInOut(progressSecondPart);
             rotation = initialRotation + (targetrotation - initialRotation) * easeInOut(progressSecondPart);
             currentTranslateX = initialTranslateX + (targetTranslateX - initialTranslateX) * easeInOut(progressSecondPart);
             currentTranslateY = initialTranslateY + (targetTranslateY - initialTranslateY) * easeInOut(progressSecondPart);
@@ -165,15 +169,15 @@
 
 {#if isVisible}
     <div id="outer-card">
-        <div class="card" id="cardframe" style="transform: translate({currentTranslateX}%, {currentTranslateY}px) rotate({-rotation}deg) rotateY({Yrotation}deg);">
+        <div class="card" id="cardframe" style="transform: translate({currentTranslateX}%, {currentTranslateY}px) rotate({-rotation}deg) rotateY({Yrotation}deg) rotateX({Xrotation}deg);">
             <div id="front">
                 <div id="goggins"></div>
                 <div id="answerOverlay" style="transform: translate(-25%, {-100+(Math.abs(rotation*3))}%) rotate({rotation}deg);">
                     <span id="answer" style="transform: translate({-50}%, 0);">{answer}</span>
                 </div>
             </div>
-            <div id="back">
-                <div id="backCard" class={$lightMode ? "light-mode card" : "card"}></div>
+            <div id="back" class={$lightMode ? "light-mode" : ""}>
+                <div id="backCard" class={$lightMode ? "light-mode" : ""}></div>
             </div>
         </div>
     </div>
@@ -217,14 +221,21 @@
     #back{
         transform: rotateY(180deg);
         background: #131313;
+        background: url("https://www.dmarge.com/wp-content/uploads/2021/08/goggins2-1-1200x800.jpg");
+        background-size: cover;
+        background-position: center;
         border-radius: 3vh;
     }
 
     #cardDeck{
         background: #131313;
+        background: url("https://www.dmarge.com/wp-content/uploads/2021/08/goggins2-1-1200x800.jpg");
+        background-size: cover;
+        background-position: center;
     }
 
-    .light-mode#cardDeck {
+    .light-mode#cardDeck,
+    #back.light-mode {
         background: #e1e1e1;
     }
 
