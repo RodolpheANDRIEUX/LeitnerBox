@@ -1,10 +1,11 @@
 <script>
     import {isQuestionVisible, lightMode, questionIndex} from './store.js';
-    import { onMount, onDestroy } from 'svelte';
-    import { createEventDispatcher } from 'svelte';
+    import { onMount } from 'svelte';
     export let data;
 
     let answer = "";
+    let actualQuestionIndex = 1;
+    const total = data.cards.length;
     let isAnimating = false;
     let isVisible = true;
     let mouseX;
@@ -137,6 +138,7 @@
     }
 
     function nextCard(){
+        actualQuestionIndex ++ ;
         if ($questionIndex >= data.cards.length) return;
         isQuestionVisible.set(false);
         setTimeout(() => {
@@ -165,9 +167,11 @@
     }
 </script>
 
-<div id="cardDeck" class={$lightMode ? "light-mode card" : "card"}></div>
+{#if actualQuestionIndex < total}
+    <div id="cardDeck" class={$lightMode ? "light-mode card" : "card"}></div>
+{/if}
 
-{#if isVisible}
+{#if isVisible && actualQuestionIndex <= total }
     <div id="outer-card">
         <div class="card" id="cardframe" style="transform: translate({currentTranslateX}%, {currentTranslateY}px) rotate({-rotation}deg) rotateY({Yrotation}deg) rotateX({Xrotation}deg);">
             <div id="front">
