@@ -1,14 +1,13 @@
 <script>
-    import { onMount } from 'svelte';
-    import { lightMode } from './store.js';
+    import {onMount} from 'svelte';
+    import {lightMode} from './store.js';
 
     onMount(() => {
         document.body.classList.toggle('light-mode', $lightMode);
 
-        const unsubscribe = lightMode.subscribe(value => {
+        return lightMode.subscribe(value => {
             document.body.classList.toggle('light-mode', value);
         });
-        return unsubscribe;
     });
 </script>
 

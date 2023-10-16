@@ -5,8 +5,6 @@
     import {isQuestionVisible, questionIndex} from "./store.js";
 
     export let data;
-
-    let visible = true;
 </script>
 
 <div id="core">
@@ -19,7 +17,7 @@
 
 <style>
     #question{
-        padding: 40px 25% 20px 25%;
+        padding: 100px 25% 20px 25%;
         text-align: center;
         font-size: 2rem;
     }

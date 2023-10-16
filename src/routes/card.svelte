@@ -1,5 +1,5 @@
 <script>
-    import {isQuestionVisible, lightMode, questionIndex} from './store.js';
+    import {isQuestionVisible, lightMode, questionIndex, loginOn} from './store.js';
     import { onMount } from 'svelte';
     export let data;
 
@@ -121,6 +121,8 @@
     function click(event){
         if (event.clientY <= 70) return;
         if(isAnimating) return;
+        console.log($loginOn)
+        if($loginOn) return;
         isAnimating = true;
 
         const screenWidth = window.innerWidth;
