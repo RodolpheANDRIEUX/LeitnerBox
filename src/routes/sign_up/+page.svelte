@@ -1,10 +1,11 @@
 <script>
     import {fade, slide} from "svelte/transition";
-    import {lightMode, loginOn} from "./store.js";
 
     let fields = {
+        'username': '',
         'mail': '',
-        'password': ''
+        'password': '',
+        'confirm password': ''
     };
 
     let fieldStates = {};
@@ -14,40 +15,15 @@
         fields[fieldKey] = value;
     }
 
-    async function handleSubmit(event) {
-        event.preventDefault();
-        const formData = new FormData(event.target);
-        const response = await fetch("?/login", {
-            method: "POST",
-            body: formData
-        });
-        const result = await response.json();
 
-        if (response.status === 401) {
-            errorMessage = "Identifiants incorrects";
-            return;
-        }
-
-        if (result.success) {
-            // Rediriger vers la page d'accueil ou un tableau de bord utilisateur
-            window.location.href = "/home";
-        }
-    }
-
-    function closeLogin(){
-        loginOn.update(value => false);
-        console.log($loginOn);
-    }
 </script>
 
 <div id="container" transition:fade={{ duration: 200 }} >
-    <div id="title" transition:slide={{ duration: 200 }}>Login</div>
-    <div id="signup" transition:slide={{ duration: 200 }}><a href="/sign_up" on:click={closeLogin} >sign up</a></div>
-
+    <div id="title" transition:slide={{ duration: 200 }}>Sign up</div>
     {#if errorMessage}
         <p>{errorMessage}</p>
     {/if}
-    <form on:submit|preventDefault={handleSubmit}>
+    <form method="post" >
         {#each Object.keys(fields) as fieldKey}
             <div class="input-group">
                 <input value={fields[fieldKey]}
@@ -56,7 +32,7 @@
                        on:focus={() => (fieldStates[fieldKey] = true)}
                        on:blur={() => (fieldStates[fieldKey] = fields[fieldKey] !== "")}
                        autocomplete="off"
-                       type={fieldKey === 'password' ? 'password' : 'text'}
+                       type={fieldKey === 'password' ? 'password' : (fieldKey === 'confirm password' ? 'password' : 'text')}
                        id={fieldKey}
                        name={fieldKey}>
                 <label for={fieldKey}>{fieldKey}</label>
@@ -74,21 +50,14 @@
         letter-spacing: .2rem;
     }
 
-    #signup {
-        margin-top: 10px;
-        font-size: .8rem;
-        letter-spacing: .2rem;
-    }
-
     #container{
-        position: fixed;
-        top: 80px;
-        right: 10px;
-        z-index: 12;
+        position: absolute;
+        top: 100px;
+        left: 50%;
+        transform: translate(-50%, 0);
         border: solid #9e9e9e 2px;
         border-radius: 30px;
-        width: 280px;
-        height: 350px;
+        width: 350px;
         text-align: center;
         padding: 20px;
         margin: 10px;
@@ -127,7 +96,7 @@
 
     label {
         position: absolute;
-        left: 30px;
+        left: 50px;
         color: #9e9e9e;
         letter-spacing: .1rem;
         pointer-events: none;

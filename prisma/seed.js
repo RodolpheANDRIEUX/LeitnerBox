@@ -36,8 +36,8 @@ async function seed() {
                     },
 
                     {
-                        question: 'Quelle est la femelle du livre ?',
-                        answer: 'La levrette',
+                        question: 'Quelle est la femelle du lièvre ?',
+                        answer: 'La hase',
                     }
                 ]
             }
@@ -49,7 +49,7 @@ async function seed() {
 seed()
     .catch((e) => {
         console.error(e);
-        process.exit(1);
+        process.exitCode(1);
     })
     .finally(async () => {
         await prisma.$disconnect();

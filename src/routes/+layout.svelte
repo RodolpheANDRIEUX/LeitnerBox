@@ -40,7 +40,7 @@
 
 {#if $loginOn}
     <div id="blurLayout" role="button" tabindex="0" on:keydown on:click|stopPropagation={toggleLogin} transition:fade={{ duration: 100 }}></div>
-    <Login />
+    <Login {loginOn}/>
 {/if}
 
 

@@ -5,11 +5,14 @@
     import {isQuestionVisible, questionIndex} from "./store.js";
 
     export let data;
+
+    const cards = data.props.cards;
+
 </script>
 
 <div id="core">
-    {#if $isQuestionVisible && $questionIndex < data.cards.length}
-        <div id="question" transition:fade={{ duration: 300, easing: t => --t*t*t+1 }} >{data.cards[$questionIndex].question}</div>
+    {#if $isQuestionVisible && $questionIndex < cards.length}
+        <div id="question" transition:fade={{ duration: 300, easing: t => --t*t*t+1 }} >{cards[$questionIndex].question}</div>
     {/if}
     <Card {data}/>
     <Progress {data}/>
