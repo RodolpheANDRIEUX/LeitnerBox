@@ -1,26 +1,7 @@
 import {Prisma} from "@prisma/client";
 import {db} from '$lib/db';
 
-export function load() {
-    // console.log(db.cards);
-    const cards = db.cards.findMany()
 
-//     const cards = [
-//             {
-//                 question: 'Quelle est la capitale de la France ?',
-//                 answer: 'Paris'
-//             },
-//     {
-//         question: 'Quelle est la racine carrée de 16 ?',
-//         answer: '4'
-//     },
-//     {
-//         question: 'Qui a écrit "Romeo et Juliette" ?',
-//         answer: 'William Shakespeare'
-//     }
-// ];
-    return {cards};
-}
 
 export const actions = {
     default: async (request) => {

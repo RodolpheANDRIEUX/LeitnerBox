@@ -1,17 +1,8 @@
-<script>
-    export let data;
-</script>
+
 
 <main>
-    <h1>Formulaire de validation</h1>
+    <h1>Ajouter une nouvelle carte :</h1>
 
-    {#each data.cards as { question, answer }} 
-        <div>
-            <h2>Carte</h2>
-            <p>Question : {question}</p>
-            <p>Réponse : {answer}</p>
-        </div>
-    {/each}
 
     <form method="post">
 

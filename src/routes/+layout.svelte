@@ -1,4 +1,4 @@
-<script>
+<script xmlns="http://www.w3.org/1999/html">
     import Toggle from "./toggle.svelte";
     import {lightMode} from "./store.js";
 </script>
@@ -6,9 +6,11 @@
 <div id="frame" class={$lightMode ? "light-mode" : ""}>
 
     <div class="icon-group left">
+        <a href="http://localhost:5173/input_test" >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
+        </a>
 
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
             <path fill-rule="evenodd" d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z" clip-rule="evenodd" />
@@ -53,6 +55,11 @@
         display: flex;
         align-items: center;
         gap: 20px;
+    }
+
+    a{
+        text-decoration: none;
+        color: white;
     }
 
 

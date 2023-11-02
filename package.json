@@ -30,7 +30,7 @@
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/kit": "^1.20.4",
 		"@sveltejs/package": "^2.0.0",
-		"prisma": "^5.3.1",
+		"prisma": "^5.4.2",
 		"publint": "^0.1.9",
 		"svelte": "^4.0.5",
 		"tslib": "^2.4.1",
