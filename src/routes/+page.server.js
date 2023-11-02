@@ -82,5 +82,4 @@ const authenticateUser = async (email, password, db) => {
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) return null;
 
-    return jwt.sign({userId: user.id, email: user.email}, SECRET_KEY, {expiresIn: '1h'});
 };
