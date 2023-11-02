@@ -2,19 +2,27 @@
     import {fade} from "svelte/transition";
     import Toggle from "./toggle.svelte";
     import Login from "./login.svelte";
-    import {lightMode, loginOn} from "./store.js";
+    import AddCardForm from "./addCardForm.svelte"
+    import {CreateCardFormOn, lightMode, loginOn} from "./store.js";
 
     function toggleLogin() {
         loginOn.update(value => !value);
+    }
+
+    function toggleCreateCard() {
+        CreateCardFormOn.update(value => !value);
     }
 </script>
 
 <div id="frame" class={$lightMode ? "light-mode" : ""}>
 
     <div class="icon-group left">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+
+        <div id="addCard" role="button" tabindex="0" on:keydown on:click={toggleCreateCard}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </div>
 
         <svg id="fastMode" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
             <path fill-rule="evenodd" d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z" clip-rule="evenodd" />
@@ -38,23 +46,39 @@
 
 <slot />
 
+{#if $CreateCardFormOn}
+    <div class={$lightMode ? "light-mode blurLayout" : "blurLayout"} id="blurLayoutAddCard" role="button" tabindex="0" on:keydown on:click|stopPropagation={toggleCreateCard} transition:fade={{ duration: 100 }}></div>
+    <AddCardForm {CreateCardFormOn}/>
+{/if}
+
 {#if $loginOn}
-    <div id="blurLayout" role="button" tabindex="0" on:keydown on:click|stopPropagation={toggleLogin} transition:fade={{ duration: 100 }}></div>
+    <div class="blurLayout" id="blurLayoutLogin" role="button" tabindex="0" on:keydown on:click|stopPropagation={toggleLogin} transition:fade={{ duration: 100 }}></div>
     <Login {loginOn}/>
 {/if}
 
-
 <style>
 
-    #blurLayout{
+    .blurLayout{
         position: fixed;
         height: 100%;
         width: 100%;
-        z-index: 9;
         top: 0;
         left: 0;
-        /*background: #00000040;*/
-        backdrop-filter: blur(5px);
+        backdrop-filter: blur(10px);
+    }
+
+    #blurLayoutAddCard {
+        z-index: 4;
+        background: #1e1e1ee1;
+    }
+
+    #blurLayoutAddCard.light-mode {
+        z-index: 4;
+        background: #ffffffe1;
+    }
+
+    #blurLayoutLogin {
+        z-index: 9;
     }
 
     svg{
@@ -64,6 +88,7 @@
     #frame {
         box-sizing: border-box;
         position: fixed;
+        top: 0;
         z-index: 10;
         height: 70px;
         width: 100vw;

@@ -15,12 +15,12 @@
 
     <form method="post">
 
-        <label for="inputQuestion">Question :</label>
+        <label for="inputQuestion">Question</label>
         <input type="text" id="inputQuestion" name="question">
 
 
-        <label for="inputAnswer">Réponse :</label>
-        <input autocomplete="off" type="text" id="inputAnswer" name="answer">
+        <label for="inputAnswer">Réponse</label>
+        <textarea id="inputAnswer" name="inputAnswer" rows="4" cols="50" required></textarea>
 
         <button type="submit">Valider</button>
     </form>

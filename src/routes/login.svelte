@@ -1,6 +1,6 @@
 <script>
     import {fade, slide} from "svelte/transition";
-    import {lightMode, loginOn} from "./store.js";
+    import {CreateCardFormOn, lightMode, loginOn} from "./store.js";
 
     let fields = {
         'mail': '',
@@ -36,7 +36,7 @@
 
     function closeLogin(){
         loginOn.update(value => false);
-        console.log($loginOn);
+        CreateCardFormOn.update(value => false);
     }
 </script>
 
@@ -59,7 +59,7 @@
                        type={fieldKey === 'password' ? 'password' : 'text'}
                        id={fieldKey}
                        name={fieldKey}>
-                <label for={fieldKey}>{fieldKey}</label>
+                <label class={$lightMode ? "light-mode" : ""} for={fieldKey}>{fieldKey}</label>
             </div>
         {/each}
         <button type="submit" transition:slide={{ duration: 200 }}>Submit</button>
@@ -145,5 +145,9 @@
         background-color: #212121;
         padding: 0 .2em;
         color: #1a73e8;
+    }
+
+    .focus-or-filled ~ label.light-mode{
+        background-color: #ffffff;
     }
 </style>
