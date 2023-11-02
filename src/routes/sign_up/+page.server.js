@@ -9,8 +9,18 @@ export const actions = {
         const password = formData.get('password');
         const passwordConfirmation = formData.get('confirm password');
 
-        console.log(username);
-        console.log(email);
-        console.log(password);
-        console.log(passwordConfirmation);
-    }};
+        //@todo: check if email is valid
+        //@todo: check if passwordConfirmation is the same as password
+
+
+        const user = await db.user.create({
+            data: {
+                email: email,
+                name: username,
+                password: password,
+            },
+        });
+
+        console.log("new user created: ", user);
+   }
+};
