@@ -28,7 +28,22 @@
     const duration = 400;
     let startTime;
 
+    // theme
+    const facesUrls = [
+        'https://cdn.discordapp.com/attachments/399312290333327360/1170043802099142676/ADCreHftsZ38XDjg1HNh46SStWXSrvkUhHfjU0_-cYlpnAVXZy3ZKcaz4CP2VkWJo5xOsIcXT-1y7UwqGzM9Nlq7eRZ2ZZZAL0SLNaSzu_5N6voOoGISjW9mfRt4LgeND4oc7zj1_pM1fZp8ajBZA6YCw-KLX1wJGlq5mtq0Rhw2iO-_hhA5ksLz0SmuEP1w3H9BX5A6-Xpy3JZpf4MyWyYE2Wddf78XolXikilv8Fcq0PTuZ04wVWJg_WS_P2bWrOBQ8QqNF_KU9Eum2F6q1NsYOFBdwWHPRRnwi0lsNiPNlpSIN9r4ufPzwgIrB-WWxMZpG2j-d53UtNPUsEFXd1DspuwbE9bnNOau2JLmaYr2q1Cv-SE7r0WJ-KRyH2VPCTP9fjYZ4mOgY6yj2e4oYQpMDrfLw9hgoPjT68ANHo_kEiXx876rVdm4nUrYDLiEZ5EjfSZRv2xGFFeirWytVDyh6nJqzzg8yWRuv6q_xsn4Pds0o4rdUQEHRlKb..png?ex=65579b34&is=65452634&hm=90344b3f38732533236b9780ad7be503b069de822168e0bb9790c03b4a2c566b&',
+        'https://cdn.discordapp.com/attachments/399312290333327360/1170028348479643789/image.png?ex=65578cd0&is=654517d0&hm=4c4b918818372636dbe9a9826134033eae48b2390ae868afa6b064f2df1dc057&',
+        'https://cdn.discordapp.com/attachments/399312290333327360/1170028496823779368/image.png?ex=65578cf3&is=654517f3&hm=d08dd52c40671fb1b232bdc6d16d41a3a00d1a9e9c4a71508549ba9604eeb4e4&',
+        'https://cdn.discordapp.com/attachments/399312290333327360/1170028577190854708/image.png?ex=65578d06&is=65451806&hm=6a9f9f76744d7d01dab661a44aa632572310846adf706aca6d880f5b0135e7dc&',
+        'https://cdn.discordapp.com/attachments/399312290333327360/1170028660913348659/image.png?ex=65578d1a&is=6545181a&hm=1c982a5252048821e56a5ed784628b51e2e75ffc2397784a46d0c8926194e9ce&'
+    ];
+    let faceIndex = 1;
+    let currentBackgroundUrl = facesUrls[faceIndex];
+
     onMount(() => {
+        facesUrls.forEach(url => {
+            const img = new Image();
+            img.src = url;
+        });
         document.body.addEventListener('mousemove', handleMouseMove);
         document.body.addEventListener('click', click);
     });
@@ -147,10 +162,22 @@
         }, 300);
     }
 
-    function swapLeft(){
+    async function swapLeft(){
+        if (faceIndex < facesUrls.length - 1) {
+            setTimeout(() => {
+                faceIndex++;
+                currentBackgroundUrl = facesUrls[faceIndex];
+            }, duration);
+        }
     }
 
-    function swapRight(){
+    async function swapRight(){
+        if (faceIndex > 0) {
+            setTimeout(() => {
+                faceIndex = faceIndex >= 2 ? 1 : faceIndex - 1;
+                currentBackgroundUrl = facesUrls[faceIndex];
+            }, duration);0
+        }
     }
 
     function easeInOut(t) {
@@ -175,7 +202,7 @@
     <div id="outer-card">
         <div class="card" id="cardframe" style="transform: translate({currentTranslateX}%, {currentTranslateY}px) rotate({-rotation}deg) rotateY({Yrotation}deg) rotateX({Xrotation}deg);">
             <div id="front">
-                <div id="goggins"></div>
+                <div id="face" style="background-image: url({currentBackgroundUrl});"></div>
                 <div id="answerOverlay" style="transform: translate(-25%, {-100+(Math.abs(rotation*3))}%) rotate({rotation}deg);">
                     <span id="answer" style="transform: translate({-50}%, 0);">{answer}</span>
                 </div>
@@ -225,17 +252,15 @@
     #back{
         transform: rotateY(180deg);
         background: #131313;
-        background: url("https://www.dmarge.com/wp-content/uploads/2021/08/goggins2-1-1200x800.jpg");
+        background: url("https://wallpaperaccess.com/full/3954357.jpg") center;
         background-size: cover;
-        background-position: center;
         border-radius: 3vh;
     }
 
     #cardDeck{
         background: #131313;
-        background: url("https://www.dmarge.com/wp-content/uploads/2021/08/goggins2-1-1200x800.jpg");
+        background: url("https://wallpaperaccess.com/full/3954357.jpg") center;
         background-size: cover;
-        background-position: center;
     }
 
     .light-mode#cardDeck,
@@ -247,11 +272,11 @@
         transform-style: preserve-3d;
     }
 
-    #goggins{
+    #face{
         height: 100%;
         width: 100%;
-        background: url("https://www.babelio.com/users/AVT_David-Goggins_4998.jpg");
-        background-size: cover;
+        background: url("https://cdn.discordapp.com/attachments/399312290333327360/1170028348479643789/image.png?ex=65578cd0&is=654517d0&hm=4c4b918818372636dbe9a9826134033eae48b2390ae868afa6b064f2df1dc057&") center;
+        background-size: 180%;
         backface-visibility: hidden;
     }
 

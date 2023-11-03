@@ -34,15 +34,18 @@
         }
     }
 
-    function closeLogin(){
-        loginOn.update(value => false);
-        CreateCardFormOn.update(value => false);
+    function closeLogin(event){
+        event.stopPropagation();
+        loginOn.set(false);
+        CreateCardFormOn.set(false);
+        window.location.href = '/sign_up'
     }
+
 </script>
 
 <div id="container" transition:fade={{ duration: 200 }} >
     <div id="title" transition:slide={{ duration: 200 }}>Login</div>
-    <div id="signup" transition:slide={{ duration: 200 }}><a href="/sign_up" on:click={closeLogin} >sign up</a></div>
+    <div id="signup" transition:slide={{ duration: 200 }}><a href="/sign_up" on:click|preventDefault={closeLogin} >sign up</a></div>
 
     {#if errorMessage}
         <p>{errorMessage}</p>

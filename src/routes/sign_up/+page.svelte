@@ -1,6 +1,7 @@
 <script>
     import {fade, slide} from "svelte/transition";
 
+
     let fields = {
         'username': '',
         'mail': '',
@@ -17,6 +18,7 @@
 
 
 </script>
+
 
 <div id="container" transition:fade={{ duration: 200 }} >
     <div id="title" transition:slide={{ duration: 200 }}>Sign up</div>
