@@ -11,14 +11,12 @@
     let loaded = false;
 
     onMount(() => {
-        setTimeout(() => {
-            loaded = true;
-        }, 80);
+        loaded = true;
     });
 </script>
 
 {#if !loaded}
-    <div class="loading-screen" transition:fade={{ duration: 200 }}></div>
+    <div class="loading-screen" transition:fade={{ duration: 500 }}></div>
 {/if}
 <div id="core">
     {#if $isQuestionVisible && $questionIndex < cards.length}

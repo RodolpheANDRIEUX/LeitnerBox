@@ -1,5 +1,6 @@
 <script>
     import {isQuestionVisible, lightMode, questionIndex, loginOn, CreateCardFormOn} from './store.js';
+    import {fade} from 'svelte/transition';
     import { onMount } from 'svelte';
     export let data;
 
@@ -40,14 +41,18 @@
     let currentBackgroundUrl = facesUrls[faceIndex];
 
     onMount(() => {
+        // preload images
         facesUrls.forEach(url => {
             const img = new Image();
             img.src = url;
         });
+
+        // event listeners
         document.body.addEventListener('mousemove', handleMouseMove);
         document.body.addEventListener('click', click);
     });
 
+    // throw card animation
     function animate(timestamp) {
         if (!startTime) startTime = timestamp;
 
@@ -69,6 +74,7 @@
         }
     }
 
+    // reset card position in the center after throwing it and before turning a new one
     function resetCardPos() {
         rotation = 0;
         Yrotation = 180;
@@ -76,6 +82,7 @@
         currentTranslateY = 0;
     }
 
+    // turn a new card animation
     function newCard(timestamp) {
         isVisible = true;
         if (!startTime) startTime = timestamp;
@@ -122,9 +129,9 @@
         if(isAnimating) return;
         const screenHeight = window.innerHeight;
         const screenWidth = window.innerWidth;
-
         const percentageX = 1 - (mouseX / screenWidth);
 
+        // update card position
         currentTranslateX = -50 - rotation*2;
         currentTranslateY = (mouseY / screenHeight)*100 -50;
         rotation = lerp(-50, 50, percentageX) / 3.5;
@@ -134,14 +141,16 @@
 
 
     function click(event){
-        if (event.clientY <= 70) return;
+        if (event.clientY <= 70) return; // click on the header disabled
         if(isAnimating || $loginOn || $CreateCardFormOn) return;
-        isAnimating = true;
 
         const screenWidth = window.innerWidth;
         const mouseX = event.clientX;
         const percentageX = 1 - (mouseX / screenWidth);
+        if (percentageX > 0.36 && percentageX < 0.64) return; // click on the middle of the card disabled
 
+        // getting initial values to launch animation
+        isAnimating = true;
         initialRotation = rotation;
         initialTranslateX = currentTranslateX;
         initialTranslateY = currentTranslateY;
@@ -149,7 +158,7 @@
         targetTranslateY = 600;
 
         percentageX > 0.5 ? swapLeft() : swapRight()
-        requestAnimationFrame(animate);
+        requestAnimationFrame(animate); // launch animation
     }
 
     function nextCard(){
@@ -203,9 +212,11 @@
         <div class="card" id="cardframe" style="transform: translate({currentTranslateX}%, {currentTranslateY}px) rotate({-rotation}deg) rotateY({Yrotation}deg) rotateX({Xrotation}deg);">
             <div id="front">
                 <div id="face" style="background-image: url({currentBackgroundUrl});"></div>
-                <div id="answerOverlay" style="transform: translate(-25%, {-100+(Math.abs(rotation*3))}%) rotate({rotation}deg);">
+                {#if !isAnimating}
+                <div id="answerOverlay" transition:fade={{ duration: 200 }} style="transform: translate(-25%, {-100+(Math.abs(rotation*3))}%) rotate({rotation}deg);">
                     <span id="answer" style="transform: translate({-50}%, 0);">{answer}</span>
                 </div>
+                {/if}
             </div>
             <div id="back" class={$lightMode ? "light-mode" : ""}>
                 <div id="backCard" class={$lightMode ? "light-mode" : ""}></div>
@@ -232,7 +243,7 @@
         left: 50%;
         bottom: 15%;
         transform: translate(-50%, 0);
-        transition: 50ms ease-out;
+        transition: 80ms ease-out;
     }
 
     #front,
@@ -287,9 +298,9 @@
         top: 0;
         left: 0;
         background: #00000050;
-        transition: 50ms;
         text-align: center;
         color: #fff;
+        transition: 80ms ease-out;
     }
 
     span{
