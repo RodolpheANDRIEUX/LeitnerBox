@@ -1,5 +1,5 @@
 <script>
-    import {lightMode, questionIndex} from "./store.js";
+    import {lightMode, questionIndex} from "./helpers.js";
 
     export let data;
 

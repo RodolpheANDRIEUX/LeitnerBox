@@ -1,6 +1,6 @@
 <script>
     import {fade, slide} from "svelte/transition";
-    import {loginOn} from "./store.js";
+    import {loginOn} from "./helpers.js";
 
     let fields = {
         'mail': '',

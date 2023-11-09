@@ -2,7 +2,7 @@
     import {fade} from "svelte/transition";
     import Toggle from "./toggle.svelte";
     import Login from "./login.svelte";
-    import {lightMode, loginOn} from "./store.js";
+    import {lightMode, loginOn} from "./helpers.js";
 
     function toggleLogin() {
         loginOn.update(value => !value);

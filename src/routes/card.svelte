@@ -1,5 +1,5 @@
 <script>
-    import {isQuestionVisible, lightMode, questionIndex, loginOn} from './store.js';
+    import {isQuestionVisible, lightMode, questionIndex, loginOn} from './helpers.js';
     import { onMount } from 'svelte';
     export let data;
 

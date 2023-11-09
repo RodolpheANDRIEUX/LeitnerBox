@@ -1,17 +1,14 @@
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { db } from "$lib/db";
+import { userLogin } from "./user.js";
+import { setAuthToken } from "./helpers.js";
 
-const SECRET_KEY = process.env.SECRET_KEY;
+const SECRET_KEY = process.env.JWT_ACCESS_SECRET;
 
-async function checkPassword(password, hashedPassword) {
-  try {
-    const match = await bcrypt.compare(password, hashedPassword);
-    return match; // true or false
-  } catch (err) {
-    console.error("Erreur lors de la vérification du mot de passe:", err);
-    throw err;
-  }
+export function createJWT(user) {
+  return jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, {
+    expiresIn: "1d",
+  });
 }
 
 export async function load({ cookies }) {
@@ -55,7 +52,7 @@ function getUserIdFromRequest(request) {
 }
 
 export const actions = {
-  createCard: async (request) => {
+  createCard: async ({ request }) => {
     const userId = getUserIdFromRequest(request);
     const data = await request.formData();
     const createdCard = await db.cards.create({
@@ -67,42 +64,15 @@ export const actions = {
     });
     return { body: { createdCard } };
   },
-  login: async (request) => {
-    const data = await request.request.formData();
+  login: async ({ cookies, request }) => {
+    const data = await request.formData();
     const mail = data.get("mail");
     const password = data.get("password");
 
-    console.log("mail:", mail);
-
-    const user = await db.user.findUnique({
-      where: {
-        email: mail,
-      },
-    });
-
-    if (!user) {
-      console.log("user non trouvé");
-      return {
-        status: 401,
-        body: {
-          error: "Utilisateur non trouvé",
-        },
-      };
-    } else {
-      console.log("user trouvé:", user.name);
+    const { error, token } = await userLogin(mail, password);
+    if (error) {
+      console.log(error);
     }
-    const matchPassword = await checkPassword(password, user.password);
-
-    if (!matchPassword) {
-      console.log("mot de passe incorrect");
-      return {
-        status: 401,
-        body: {
-          error: "Mot de passe incorrect",
-        },
-      };
-    } else {
-      console.log("connexion réussie, user:", user.name);
-    }
+    setAuthToken({ cookies, token });
   },
 };

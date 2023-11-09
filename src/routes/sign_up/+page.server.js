@@ -1,17 +1,5 @@
-import { db } from "$lib/db";
-import bcrypt from "bcrypt";
-async function hashPassword(password) {
-  const saltRounds = 10;
-
-  try {
-    const salt = await bcrypt.genSalt(saltRounds);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    return hashedPassword;
-  } catch (err) {
-    console.error("Erreur lors du hashage du mot de passe:", err);
-    throw err;
-  }
-}
+import { createJWT, setAuthToken } from "../helpers.js";
+import { createUser } from "../user.js";
 
 export const actions = {
   default: async (data) => {
@@ -20,16 +8,13 @@ export const actions = {
     const username = formData.get("username");
     const password = formData.get("password");
 
-    const hashedPassword = await hashPassword(password);
+    const { error, token } = await createUser(email, username, password);
 
-    const user = await db.user.create({
-      data: {
-        email: email,
-        name: username,
-        password: hashedPassword,
-      },
-    });
+    if (error) {
+      console.log(error);
+    }
 
+    setAuthToken(token);
     console.log("new user created: ", user);
   },
 };
