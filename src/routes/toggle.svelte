@@ -25,6 +25,7 @@
     }
 
     .cl-switch {
+        cursor: pointer;
         position: relative;
         display: inline-block;
     }
