@@ -34,6 +34,7 @@ export async function createUser(email, username, password) {
   });
 
   const token = createJWT(user);
+  console.log("token:", token); //debug
   return { token };
 }
 
