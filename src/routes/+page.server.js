@@ -6,9 +6,13 @@ import { setAuthToken } from "./helpers.js";
 const SECRET_KEY = process.env.JWT_ACCESS_SECRET;
 
 export function createJWT(user) {
-  return jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, {
-    expiresIn: "1d",
-  });
+  return jwt.sign(
+    { id: user.id, email: user.email, name: user.name },
+    SECRET_KEY,
+    {
+      expiresIn: "1d",
+    },
+  );
 }
 
 export async function load({ cookies }) {

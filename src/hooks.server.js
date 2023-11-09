@@ -3,7 +3,6 @@ import { db } from "$lib/db.js";
 import { JWT_ACCESS_SECRET } from "$env/static/private";
 
 export const handle = async ({ event, resolve }) => {
-  console.log("hooks");
   const authCookie = event.cookies.get("AuthorizationToken");
 
   if (authCookie) {
