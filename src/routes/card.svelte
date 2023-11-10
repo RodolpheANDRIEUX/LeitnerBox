@@ -204,12 +204,13 @@
 </script>
 
 {#if actualQuestionIndex < total}
-    <div id="cardDeck" class={$lightMode ? "light-mode card" : "card"}></div>
+
+    <div id="cardDeck" class={$lightMode ? "light-mode card backCard" : "card backCard"}></div>
 {/if}
 
 {#if isVisible && actualQuestionIndex <= total }
     <div id="outer-card">
-        <div class="card" id="cardframe" style="transform: translate({currentTranslateX}%, {currentTranslateY}px) rotate({-rotation}deg) rotateY({Yrotation}deg) rotateX({Xrotation}deg);">
+        <div class="card" id="cardFrame" style="transform: translate({currentTranslateX}%, {currentTranslateY}px) rotate({-rotation}deg) rotateY({Yrotation}deg) rotateX({Xrotation}deg);">
             <div id="front">
                 <div id="face" style="background-image: url({currentBackgroundUrl});"></div>
                 {#if !isAnimating}
@@ -218,16 +219,14 @@
                 </div>
                 {/if}
             </div>
-            <div id="back" class={$lightMode ? "light-mode" : ""}>
-                <div id="backCard" class={$lightMode ? "light-mode" : ""}></div>
-            </div>
+            <div id="back" class={$lightMode ? "light-mode backCard" : "backCard"}></div>
         </div>
     </div>
 {/if}
 
 
 <style>
-    #outer-card{
+    #outer-card {
         position: fixed;
         top: 0;
         height: 100vh;
@@ -246,6 +245,10 @@
         transition: 80ms ease-out;
     }
 
+    #cardFrame {
+        transform-style: preserve-3d;
+    }
+
     #front,
     #back {
         position: absolute;
@@ -254,24 +257,22 @@
         backface-visibility: hidden;
     }
 
-    #front{
+    #front {
         transform: rotateY(0deg);
         overflow: hidden;
         border-radius: 3vh;
     }
 
-    #back{
+    #back {
         transform: rotateY(180deg);
+    }
+
+    .backCard {
         background: #131313;
         background: url("https://wallpaperaccess.com/full/3954357.jpg") center;
         background-size: cover;
         border-radius: 3vh;
-    }
-
-    #cardDeck{
-        background: #131313;
-        background: url("https://wallpaperaccess.com/full/3954357.jpg") center;
-        background-size: cover;
+        box-shadow: inset 0 0 0 8px #13131380;
     }
 
     .light-mode#cardDeck,
@@ -279,11 +280,7 @@
         background: #e1e1e1;
     }
 
-    #cardframe{
-        transform-style: preserve-3d;
-    }
-
-    #face{
+    #face {
         height: 100%;
         width: 100%;
         background: url("https://cdn.discordapp.com/attachments/399312290333327360/1170028348479643789/image.png?ex=65578cd0&is=654517d0&hm=4c4b918818372636dbe9a9826134033eae48b2390ae868afa6b064f2df1dc057&") center;
@@ -291,7 +288,7 @@
         backface-visibility: hidden;
     }
 
-    #answerOverlay{
+    #answerOverlay {
         position: absolute;
         height: 100%;
         width: 200%;
@@ -303,7 +300,7 @@
         transition: 80ms ease-out;
     }
 
-    span{
+    #answer {
         position: absolute;
         bottom: 10%;
         left: 50%;
