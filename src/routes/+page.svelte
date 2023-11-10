@@ -1,8 +1,8 @@
 <script>
     import Progress from "./progress.svelte";
     import Card from "./card.svelte";
-    import { fade } from 'svelte/transition';
-    import {isQuestionVisible, questionIndex} from "./store.js";
+    import {fade} from 'svelte/transition';
+    import {isQuestionVisible, questionIndex} from "./helpers.js";
     import {onMount} from "svelte";
 
     export let data;
@@ -13,6 +13,7 @@
     onMount(() => {
         loaded = true;
     });
+    const user = data.props.user;
 </script>
 
 {#if !loaded}
@@ -20,11 +21,14 @@
 {/if}
 <div id="core">
     {#if $isQuestionVisible && $questionIndex < cards.length}
-        <div id="question" transition:fade={{ duration: 300, easing: t => --t*t*t+1 }} >{cards[$questionIndex].question}</div>
+        <div id="question"
+             transition:fade={{ duration: 300, easing: t => --t*t*t+1 }}>{cards[$questionIndex].question}</div>
     {/if}
     <Card {data}/>
     <Progress {data}/>
 </div>
+
+<div> User {user ? user.name : 'Loading...'}</div>
 
 <style>
     .loading-screen {
@@ -37,7 +41,7 @@
         z-index: 9;
     }
 
-    #question{
+    #question {
         padding: 100px 25% 20px 25%;
         text-align: center;
         font-size: 2rem;

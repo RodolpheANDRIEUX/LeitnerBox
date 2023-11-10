@@ -1,7 +1,6 @@
 <script>
     import {fade, slide} from "svelte/transition";
 
-
     let fields = {
         'username': '',
         'mail': '',
@@ -16,16 +15,59 @@
         fields[fieldKey] = value;
     }
 
+    function validateForm(event) {
+
+        //@todo:  username unique (check la db)
+        //@todo:  mail unique (check la db)
+
+        const hasUppercase = /[A-Z]/.test(fields.password);
+        const hasLowercase = /[a-z]/.test(fields.password);
+        const hasDigits = /\d/.test(fields.password);
+        const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(fields.password);
+
+        if (!hasUppercase || !hasLowercase || !hasDigits || !hasSpecialChar) {
+            errorMessage = `Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial.`;
+            event.preventDefault();
+            return;
+        }
+
+        if (fields.password.length < 8) {
+            errorMessage = 'Le mot de passe doit contenir au moins 8 caractères';
+            event.preventDefault();
+            return;
+        }
+
+
+        for (let key in fields) {
+            if (!fields[key]) {
+                errorMessage = `Le champ ${key} est requis.`;
+                event.preventDefault();
+                return;
+            }
+        }
+
+        if (!fields.mail.includes('@')) {
+            errorMessage = 'L\'adresse mail n\'est pas valide.';
+            event.preventDefault();
+            return;
+        }
+
+
+        if (fields.password !== fields['confirm password']) {
+            errorMessage = 'Les mots de passe ne correspondent pas.';
+            event.preventDefault();
+            return;
+        }
+    }
 
 </script>
 
-
-<div id="container" transition:fade={{ duration: 200 }} >
+<div id="container" transition:fade={{ duration: 200 }}>
     <div id="title" transition:slide={{ duration: 200 }}>Sign up</div>
     {#if errorMessage}
         <p>{errorMessage}</p>
     {/if}
-    <form method="post" >
+    <form method="post" on:submit={validateForm}>
         {#each Object.keys(fields) as fieldKey}
             <div class="input-group">
                 <input value={fields[fieldKey]}
@@ -52,7 +94,7 @@
         letter-spacing: .2rem;
     }
 
-    #container{
+    #container {
         position: absolute;
         top: 100px;
         left: 50%;
@@ -65,7 +107,7 @@
         margin: 10px;
     }
 
-    .input-group{
+    .input-group {
         position: relative;
         margin: 20px;
     }
@@ -93,7 +135,7 @@
         padding: 1rem;
         font-size: 1rem;
         letter-spacing: .1rem;
-        transition: border 150ms cubic-bezier(0.4,0,0.2,1);
+        transition: border 150ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     label {
@@ -103,7 +145,7 @@
         letter-spacing: .1rem;
         pointer-events: none;
         transform: translateY(1rem);
-        transition: 150ms cubic-bezier(0.4,0,0.2,1);
+        transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .focus-or-filled {

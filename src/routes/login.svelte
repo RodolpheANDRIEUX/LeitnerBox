@@ -41,9 +41,10 @@
         window.location.href = '/sign_up'
     }
 
+
 </script>
 
-<div id="container" transition:fade={{ duration: 200 }} >
+<div id="container" transition:fade={{ duration: 200 }}>
     <div id="title" transition:slide={{ duration: 200 }}>Login</div>
     <div id="signup" transition:slide={{ duration: 200 }}><a href="/sign_up" on:click|preventDefault={closeLogin} >sign up</a></div>
 
@@ -83,7 +84,7 @@
         letter-spacing: .2rem;
     }
 
-    #container{
+    #container {
         position: fixed;
         top: 80px;
         right: 10px;
@@ -97,7 +98,7 @@
         margin: 10px;
     }
 
-    .input-group{
+    .input-group {
         position: relative;
         margin: 20px;
     }
@@ -125,7 +126,7 @@
         padding: 1rem;
         font-size: 1rem;
         letter-spacing: .1rem;
-        transition: border 150ms cubic-bezier(0.4,0,0.2,1);
+        transition: border 150ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     label {
@@ -135,7 +136,7 @@
         letter-spacing: .1rem;
         pointer-events: none;
         transform: translateY(1rem);
-        transition: 150ms cubic-bezier(0.4,0,0.2,1);
+        transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .focus-or-filled {

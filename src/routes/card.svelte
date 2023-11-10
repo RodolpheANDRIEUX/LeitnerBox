@@ -1,5 +1,5 @@
 <script>
-    import {isQuestionVisible, lightMode, questionIndex, loginOn, CreateCardFormOn} from './store.js';
+    import {isQuestionVisible, lightMode, questionIndex, loginOn, CreateCardFormOn} from './helpers.js';
     import {fade} from 'svelte/transition';
     import { onMount } from 'svelte';
     export let data;
