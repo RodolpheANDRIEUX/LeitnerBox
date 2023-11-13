@@ -16,10 +16,11 @@ export const handle = async ({ event, resolve }) => {
         select: {
           id: true,
           email: true,
+          name: true,
         },
       });
       if (user) {
-        event.locals.user = user;
+        event.cookies.user = user;
       }
     } catch (error) {
       console.log(error);

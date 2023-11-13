@@ -28,7 +28,7 @@
     <Progress {data}/>
 </div>
 
-<div> User {user ? user.name : 'Loading...'}</div>
+<div>Logged in as user: {user.name}</div>
 
 <style>
     .loading-screen {

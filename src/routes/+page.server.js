@@ -16,22 +16,14 @@ export function createJWT(user) {
 }
 
 export async function load({ cookies }) {
-  // set the cookie "visited" on "true" everywhere
-  cookies.set("visited", "true", { path: "/" });
-
-  const user = await db.user.findUnique({
-    where: {
-      id: 40,
-    },
-  });
-
+  const user = cookies.user;
+  console.log(user);
   // gets every user 1 cards
   const cards = await db.cards.findMany({ where: { userId: 1 } }); //TODO mettre un userID dynamique
 
   // return everything we need client-side in "data"
   return {
     props: {
-      visited: cookies.get("visited"),
       user,
       cards,
     },

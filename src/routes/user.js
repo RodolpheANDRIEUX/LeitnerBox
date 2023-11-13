@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { db } from "$lib/db.js";
 import { createJWT } from "./+page.server.js";
+import { fail } from "@sveltejs/kit";
 async function hashPassword(password) {
   const saltRounds = 10;
 
@@ -47,7 +48,7 @@ export async function userLogin(email, password) {
     });
 
     if (!user) {
-      return { error: "Utilisateur non trouvé" };
+      return fail(401, { error: "Utilisateur non trouvé" });
     } else {
       console.log("user trouvé:", user.name);
     }
