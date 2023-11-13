@@ -1,6 +1,8 @@
 <script>
     import {fade, slide} from "svelte/transition";
-    import {CreateCardFormOn, lightMode, loginOn} from "./store.js";
+    import {CreateCardFormOn, lightMode, loginOn} from "./helpers.js";
+
+    export let form;
 
     let fields = {
         'mail': '',
@@ -8,30 +10,9 @@
     };
 
     let fieldStates = {};
-    let errorMessage = '';
 
     function updateValue(fieldKey, value) {
         fields[fieldKey] = value;
-    }
-
-    async function handleSubmit(event) {
-        event.preventDefault();
-        const formData = new FormData(event.target);
-        const response = await fetch("?/login", {
-            method: "POST",
-            body: formData
-        });
-        const result = await response.json();
-
-        if (response.status === 401) {
-            errorMessage = "Identifiants incorrects";
-            return;
-        }
-
-        if (result.success) {
-            // Rediriger vers la page d'accueil ou un tableau de bord utilisateur
-            window.location.href = "/home";
-        }
     }
 
     function closeLogin(event){
@@ -48,10 +29,11 @@
     <div id="title" transition:slide={{ duration: 200 }}>Login</div>
     <div id="signup" transition:slide={{ duration: 200 }}><a href="/sign_up" on:click|preventDefault={closeLogin} >sign up</a></div>
 
-    {#if errorMessage}
-        <p>{errorMessage}</p>
+    {#if form?.error}
+        <p>{form.error}</p>
     {/if}
-    <form on:submit|preventDefault={handleSubmit}>
+
+    <form method="POST" action="?/login">
         {#each Object.keys(fields) as fieldKey}
             <div class="input-group">
                 <input value={fields[fieldKey]}

@@ -4,6 +4,7 @@ export const lightMode = writable(false);
 export const questionIndex = writable(0);
 export const isQuestionVisible = writable(true);
 export const loginOn = writable(false);
+export const CreateCardFormOn = writable(false);
 export const token = writable(null);
 
 export const setAuthToken = ({ cookies, token }) => {

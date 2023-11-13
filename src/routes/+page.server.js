@@ -21,7 +21,7 @@ export async function load({ cookies }) {
 
   const user = await db.user.findUnique({
     where: {
-      id: 1,
+      id: 40,
     },
   });
 
