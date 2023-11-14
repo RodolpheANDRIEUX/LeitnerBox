@@ -1,8 +1,10 @@
 <script>
     import {fade, slide} from "svelte/transition";
     import {CreateCardFormOn, lightMode, loginOn} from "./helpers.js";
+    import {applyAction, deserialize} from "$app/forms";
+    import {invalidateAll} from "$app/navigation";
 
-    export let form;
+    // export let form;
 
     let fields = {
         'mail': '',
@@ -10,6 +12,7 @@
     };
 
     let fieldStates = {};
+    let errorMessage = '';
 
     function updateValue(fieldKey, value) {
         fields[fieldKey] = value;
@@ -22,6 +25,29 @@
         window.location.href = '/sign_up'
     }
 
+    async function handleSubmit(event) {
+        event.stopPropagation();
+        const data = new FormData(event.currentTarget);
+
+        const response = await fetch(event.currentTarget.action, {
+            method: 'POST',
+            body: data
+        });
+
+        const result = deserialize(await response.text());
+        console.log(result);
+
+        if (result.type === 'failure') {
+            errorMessage = result.data.error;
+        }
+
+        if (result.type === 'success') {
+            await invalidateAll(); // rerun `load` functions
+            loginOn.set(false);
+        }
+
+        await applyAction(result);
+    }
 
 </script>
 
@@ -29,13 +55,11 @@
     <div id="title" transition:slide={{ duration: 200 }}>Login</div>
     <div id="signup" transition:slide={{ duration: 200 }}><a href="/sign_up" on:click|preventDefault={closeLogin} >sign up</a></div>
 
-    {#if form?.error}
-        <p>{form.error}</p>
+    {#if errorMessage}
+        <p>{errorMessage}</p>
     {/if}
 
-
-
-    <form method="POST" action="?/login">
+    <form method="POST" action="?/login" on:submit|preventDefault={handleSubmit} >
         {#each Object.keys(fields) as fieldKey}
             <div class="input-group">
                 <input value={fields[fieldKey]}

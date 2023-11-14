@@ -3,7 +3,7 @@
 
     export let data;
 
-    const total = data.props.cards.length;
+    const total = data.cards.length;
     $: progressWidth = ($questionIndex / total) * 100;
 </script>
 

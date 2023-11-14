@@ -1,5 +1,6 @@
-import { createJWT, setAuthToken } from "../helpers.js";
-import { createUser } from "../user.js";
+import { setAuthToken } from "../helpers.js";
+import { createUser } from "/prisma/user.js";
+import { redirect } from "@sveltejs/kit";
 
 export const actions = {
   default: async ({ request, cookies }) => {
@@ -15,5 +16,7 @@ export const actions = {
     }
 
     setAuthToken({ cookies, token });
+
+    throw  redirect(302, "/");
   },
 };

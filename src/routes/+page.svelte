@@ -7,28 +7,30 @@
 
     export let data;
 
-    const cards = data.props.cards;
+    const cards = data.cards;
     let loaded = false;
 
     onMount(() => {
         loaded = true;
     });
-    const user = data.props.user;
+
 </script>
 
 {#if !loaded}
     <div class="loading-screen" transition:fade={{ duration: 500 }}></div>
 {/if}
+
 <div id="core">
     {#if $isQuestionVisible && $questionIndex < cards.length}
         <div id="question"
              transition:fade={{ duration: 300, easing: t => --t*t*t+1 }}>{cards[$questionIndex].question}</div>
     {/if}
+
+    <div>{data?.user?.name ?? 'Vous n\'etes pas connecté'}</div>
+
     <Card {data}/>
     <Progress {data}/>
 </div>
-
-<div>Logged in as user: {user.name}</div>
 
 <style>
     .loading-screen {

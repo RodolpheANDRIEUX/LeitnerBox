@@ -1,7 +1,20 @@
 import bcrypt from "bcrypt";
 import { db } from "$lib/db.js";
-import { createJWT } from "./+page.server.js";
 import { fail } from "@sveltejs/kit";
+import jwt from "jsonwebtoken";
+import { JWT_ACCESS_SECRET } from "$env/static/private";
+
+
+function createJWT(user) {
+  return jwt.sign(
+      { id: user.id, email: user.email, name: user.name },
+      JWT_ACCESS_SECRET,
+      {
+        expiresIn: "1d",
+      },
+  );
+}
+
 async function hashPassword(password) {
   const saltRounds = 10;
 
@@ -48,7 +61,7 @@ export async function userLogin(email, password) {
     });
 
     if (!user) {
-      return fail(401, { error: "Utilisateur non trouvé" });
+      return {error: 'User not found'};
     } else {
       console.log("user trouvé:", user.name);
     }

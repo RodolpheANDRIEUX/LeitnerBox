@@ -6,7 +6,7 @@
 
     let answer = "";
     let actualQuestionIndex = 1;
-    const total = data.props.cards.length;
+    const total = data.cards.length;
     let isAnimating = false;
     let isVisible = true;
     let mouseX;
@@ -163,7 +163,7 @@
 
     function nextCard(){
         actualQuestionIndex ++ ;
-        if ($questionIndex >= data.props.cards.length) return;
+        if ($questionIndex >= data.cards.length) return;
         isQuestionVisible.set(false);
         setTimeout(() => {
             questionIndex.set($questionIndex+1);

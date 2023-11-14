@@ -1,32 +1,22 @@
 import jwt from "jsonwebtoken";
 import { db } from "$lib/db";
-import { userLogin } from "./user.js";
+import { userLogin } from "/prisma/user.js";
 import { setAuthToken } from "./helpers.js";
+import {fail, redirect} from "@sveltejs/kit";
 
-const SECRET_KEY = process.env.JWT_ACCESS_SECRET;
+export async function load({ locals }) {
+  const user = locals.user;
+  if (user){
+    console.log("User trouvé dans cookies: ", user);
+  }
 
-export function createJWT(user) {
-  return jwt.sign(
-    { id: user.id, email: user.email, name: user.name },
-    SECRET_KEY,
-    {
-      expiresIn: "1d",
-    },
-  );
-}
-
-export async function load({ cookies }) {
-  const user = cookies.user;
-  console.log(user);
   // gets every user 1 cards
   const cards = await db.cards.findMany({ where: { userId: 1 } }); //TODO mettre un userID dynamique
 
   // return everything we need client-side in "data"
   return {
-    props: {
-      user,
-      cards,
-    },
+    user,
+    cards,
   };
 }
 
@@ -61,14 +51,16 @@ export const actions = {
     return { body: { createdCard } };
   },
   login: async ({ cookies, request }) => {
+    console.log("login action called");
     const data = await request.formData();
     const mail = data.get("mail");
     const password = data.get("password");
 
     const { error, token } = await userLogin(mail, password);
     if (error) {
-      console.log(error);
+      return fail(500, {error});
     }
+
     setAuthToken({ cookies, token });
   },
 };

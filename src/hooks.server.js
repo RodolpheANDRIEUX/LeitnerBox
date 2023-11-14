@@ -6,7 +6,11 @@ export const handle = async ({ event, resolve }) => {
   const authCookie = event.cookies.get("AuthorizationToken");
 
   if (authCookie) {
-    const token = authCookie.split(" ")[1];
+    const token = authCookie.split(' ')[1];
+    if (token === 'undefined') {
+      console.log("no token found"); //debug
+      return await resolve(event);
+    }
     try {
       const jwtUser = jwt.verify(token, JWT_ACCESS_SECRET);
       const user = await db.user.findUnique({
@@ -20,10 +24,10 @@ export const handle = async ({ event, resolve }) => {
         },
       });
       if (user) {
-        event.cookies.user = user;
+        event.locals.user = user;
       }
     } catch (error) {
-      console.log(error);
+      console.log("error handling auth cookie", error);
     }
   }
   return await resolve(event);
