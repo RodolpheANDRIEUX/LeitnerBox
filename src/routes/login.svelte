@@ -56,7 +56,7 @@
     <div id="signup" transition:slide={{ duration: 200 }}><a href="/sign_up" on:click|preventDefault={closeLogin} >sign up</a></div>
 
     {#if errorMessage}
-        <p>{errorMessage}</p>
+        <p id="errorMessage" transition:slide={{ duration: 400 }}>{errorMessage}</p>
     {/if}
 
     <form method="POST" action="?/login" on:submit|preventDefault={handleSubmit} >
@@ -154,12 +154,19 @@
 
     .focus-or-filled ~ label {
         transform: translateY(-50%) scale(0.8);
-        background-color: #212121;
+        background-color: #1e1e1e;
         padding: 0 .2em;
         color: #1a73e8;
     }
 
     .focus-or-filled ~ label.light-mode{
         background-color: #ffffff;
+    }
+
+    #errorMessage {
+        color: red;
+        font-size: .8rem;
+        margin: 15px 0 0 0 ;
+        padding: 0;
     }
 </style>
