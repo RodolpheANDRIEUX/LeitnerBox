@@ -2,7 +2,7 @@
     import Progress from "./progress.svelte";
     import Card from "./card.svelte";
     import {fade} from 'svelte/transition';
-    import {isQuestionVisible, questionIndex} from "./helpers.js";
+    import {isQuestionVisible, questionIndex, displayAnswer} from "./helpers.js";
     import {onMount} from "svelte";
 
     export let data;
@@ -23,7 +23,10 @@
 <div id="core">
     {#if $isQuestionVisible && $questionIndex < cards.length}
         <div id="question"
-             transition:fade={{ duration: 300, easing: t => --t*t*t+1 }}>{cards[$questionIndex].question}</div>
+             transition:fade={{ duration: 300, easing: t => --t*t*t+1 }}>
+            {displayAnswer ? cards[$questionIndex].question : cards[$questionIndex].answer}
+        </div>
+
     {/if}
 
     <div>{data?.user?.name ?? 'Vous n\'etes pas connecté'}</div>

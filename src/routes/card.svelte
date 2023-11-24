@@ -1,10 +1,12 @@
 <script>
-    import {isQuestionVisible, lightMode, questionIndex, loginOn, CreateCardFormOn} from './helpers.js';
+    import {isQuestionVisible, lightMode, questionIndex, loginOn, CreateCardFormOn, displayAnswer} from './helpers.js';
     import {fade} from 'svelte/transition';
     import { onMount } from 'svelte';
+    import Answer from './Answer.svelte';
+
     export let data;
 
-    let answer = "";
+    let options = "";
     let actualQuestionIndex = 1;
     const total = data.cards.length;
     let isAnimating = false;
@@ -67,7 +69,11 @@
             requestAnimationFrame(animate);
         } else {
             startTime = null;
-            nextCard();
+            console.log($displayAnswer);
+            if ($displayAnswer) {
+                displayAnswer.set(false);
+                nextCard();
+            } else displayAnswer.set(true);
             isVisible = false;
             resetCardPos();
             requestAnimationFrame(newCard)
@@ -136,7 +142,7 @@
         currentTranslateY = (mouseY / screenHeight)*100 -50;
         rotation = lerp(-50, 50, percentageX) / 3.5;
 
-        answer = percentageX > 0.5 ? "I don't know" : "I know !";
+        options = percentageX > 0.5 ? "I don't know" : "I know !";
     }
 
 
@@ -201,10 +207,11 @@
         let jump = (-initialTranslateY + 50) * 0.02;
         return t * ((jump + 1) * t - jump);
     }
+
+
 </script>
 
-{#if actualQuestionIndex < total}
-
+{#if actualQuestionIndex < total || !$displayAnswer && actualQuestionIndex <= total}
     <div id="cardDeck" class={$lightMode ? "light-mode card backCard" : "card backCard"}></div>
 {/if}
 
@@ -212,12 +219,16 @@
     <div id="outer-card">
         <div class="card" id="cardFrame" style="transform: translate({currentTranslateX}%, {currentTranslateY}px) rotate({-rotation}deg) rotateY({Yrotation}deg) rotateX({Xrotation}deg);">
             <div id="front">
-                <div id="face" style="background-image: url({currentBackgroundUrl});"></div>
-                {#if !isAnimating}
-                <div id="answerOverlay" transition:fade={{ duration: 200 }} style="transform: translate(-25%, {-100+(Math.abs(rotation*3))}%) rotate({rotation}deg);">
-                    <span id="answer" style="transform: translate({-50}%, 0);">{answer}</span>
+                <div id="face" style="background-image: url({currentBackgroundUrl});">
+                    {#if $displayAnswer}
+                        <Answer {data}/>
+                    {:else if !isAnimating}
+                        <div id="answerOverlay" transition:fade={{ duration: 200 }}
+                             style="transform: translate(-25%, {-100 + (Math.abs(rotation * 3))}%) rotate({rotation}deg);">
+                            <span id="answer" style="transform: translate(-50%, 0);">{options}</span>
+                        </div>
+                    {/if}
                 </div>
-                {/if}
             </div>
             <div id="back" class={$lightMode ? "light-mode backCard" : "backCard"}></div>
         </div>
