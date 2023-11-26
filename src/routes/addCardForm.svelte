@@ -1,6 +1,6 @@
 <script>
     import {fade, slide} from "svelte/transition";
-    import {lightMode} from "./store.js";
+    import {lightMode} from "./helpers.js";
 
     let isHighlighted = false;
 

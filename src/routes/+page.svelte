@@ -1,27 +1,36 @@
 <script>
     import Progress from "./progress.svelte";
     import Card from "./card.svelte";
-    import { fade } from 'svelte/transition';
-    import {isQuestionVisible, questionIndex} from "./store.js";
+    import {fade} from 'svelte/transition';
+    import {isQuestionVisible, questionIndex} from "./helpers.js";
     import {onMount} from "svelte";
 
     export let data;
 
-    const cards = data.props.cards;
+    $: card = data?.deck[$questionIndex];
     let loaded = false;
 
     onMount(() => {
         loaded = true;
     });
+
 </script>
 
 {#if !loaded}
     <div class="loading-screen" transition:fade={{ duration: 500 }}></div>
 {/if}
+
 <div id="core">
-    {#if $isQuestionVisible && $questionIndex < cards.length}
-        <div id="question" transition:fade={{ duration: 300, easing: t => --t*t*t+1 }} >{cards[$questionIndex].question}</div>
+    {#if $isQuestionVisible && card.nature !== 'answer'}
+        <div id="question"
+             transition:fade={{ duration: 300, easing: t => --t*t*t+1 }}>
+            {card.content}
+        </div>
+
     {/if}
+
+    <div>{data?.user?.name ?? 'Vous n\'etes pas connecté'}</div>
+
     <Card {data}/>
     <Progress {data}/>
 </div>
@@ -37,7 +46,7 @@
         z-index: 9;
     }
 
-    #question{
+    #question {
         padding: 100px 25% 20px 25%;
         text-align: center;
         font-size: 2rem;

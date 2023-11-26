@@ -1,6 +1,6 @@
 <script>
     import {onMount} from 'svelte';
-    import {lightMode} from './store.js';
+    import {lightMode} from './helpers.js';
 
     onMount(() => {
         document.body.classList.toggle('light-mode', $lightMode);

@@ -3,7 +3,7 @@
     import Toggle from "./toggle.svelte";
     import Login from "./login.svelte";
     import AddCardForm from "./addCardForm.svelte"
-    import {CreateCardFormOn, lightMode, loginOn} from "./store.js";
+    import {CreateCardFormOn, lightMode, loginOn} from "./helpers.js";
 
     function toggleLogin() {
         loginOn.update(value => !value);

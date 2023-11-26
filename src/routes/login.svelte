@@ -1,6 +1,10 @@
 <script>
     import {fade, slide} from "svelte/transition";
-    import {CreateCardFormOn, lightMode, loginOn} from "./store.js";
+    import {CreateCardFormOn, lightMode, loginOn} from "./helpers.js";
+    import {applyAction, deserialize} from "$app/forms";
+    import {invalidateAll} from "$app/navigation";
+
+    // export let form;
 
     let fields = {
         'mail': '',
@@ -14,26 +18,6 @@
         fields[fieldKey] = value;
     }
 
-    async function handleSubmit(event) {
-        event.preventDefault();
-        const formData = new FormData(event.target);
-        const response = await fetch("?/login", {
-            method: "POST",
-            body: formData
-        });
-        const result = await response.json();
-
-        if (response.status === 401) {
-            errorMessage = "Identifiants incorrects";
-            return;
-        }
-
-        if (result.success) {
-            // Rediriger vers la page d'accueil ou un tableau de bord utilisateur
-            window.location.href = "/home";
-        }
-    }
-
     function closeLogin(event){
         event.stopPropagation();
         loginOn.set(false);
@@ -41,16 +25,40 @@
         window.location.href = '/sign_up'
     }
 
+    async function handleSubmit(event) {
+        event.stopPropagation();
+        const data = new FormData(event.currentTarget);
+
+        const response = await fetch(event.currentTarget.action, {
+            method: 'POST',
+            body: data
+        });
+
+        const result = deserialize(await response.text());
+
+        if (result.type === 'failure') {
+            errorMessage = result.data.error;
+        }
+
+        if (result.type === 'success') {
+            loginOn.set(false);
+            await invalidateAll(); // rerun `load` functions
+        }
+
+        await applyAction(result);
+    }
+
 </script>
 
-<div id="container" transition:fade={{ duration: 200 }} >
+<div id="container" transition:fade={{ duration: 200 }}>
     <div id="title" transition:slide={{ duration: 200 }}>Login</div>
     <div id="signup" transition:slide={{ duration: 200 }}><a href="/sign_up" on:click|preventDefault={closeLogin} >sign up</a></div>
 
     {#if errorMessage}
-        <p>{errorMessage}</p>
+        <p id="errorMessage" transition:slide={{ duration: 400 }}>{errorMessage}</p>
     {/if}
-    <form on:submit|preventDefault={handleSubmit}>
+
+    <form method="POST" action="?/login" on:submit|preventDefault={handleSubmit} >
         {#each Object.keys(fields) as fieldKey}
             <div class="input-group">
                 <input value={fields[fieldKey]}
@@ -83,7 +91,7 @@
         letter-spacing: .2rem;
     }
 
-    #container{
+    #container {
         position: fixed;
         top: 80px;
         right: 10px;
@@ -97,7 +105,7 @@
         margin: 10px;
     }
 
-    .input-group{
+    .input-group {
         position: relative;
         margin: 20px;
     }
@@ -125,7 +133,7 @@
         padding: 1rem;
         font-size: 1rem;
         letter-spacing: .1rem;
-        transition: border 150ms cubic-bezier(0.4,0,0.2,1);
+        transition: border 150ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     label {
@@ -135,7 +143,7 @@
         letter-spacing: .1rem;
         pointer-events: none;
         transform: translateY(1rem);
-        transition: 150ms cubic-bezier(0.4,0,0.2,1);
+        transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .focus-or-filled {
@@ -145,12 +153,19 @@
 
     .focus-or-filled ~ label {
         transform: translateY(-50%) scale(0.8);
-        background-color: #212121;
+        background-color: #1e1e1e;
         padding: 0 .2em;
         color: #1a73e8;
     }
 
     .focus-or-filled ~ label.light-mode{
         background-color: #ffffff;
+    }
+
+    #errorMessage {
+        color: red;
+        font-size: .8rem;
+        margin: 15px 0 0 0 ;
+        padding: 0;
     }
 </style>
