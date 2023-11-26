@@ -1,12 +1,11 @@
 <script>
-    import {questionIndex} from "./helpers.js"
-    export let data;
+    export let node;
 
-
+    console.log(node);
 </script>
 
 <div id="background">
-    <div id="answer">{data.cards[$questionIndex].answer}</div>
+    <div id="answer">{node?.content}</div>
 </div>
 
 <style>

@@ -2,12 +2,12 @@
     import Progress from "./progress.svelte";
     import Card from "./card.svelte";
     import {fade} from 'svelte/transition';
-    import {isQuestionVisible, questionIndex, displayAnswer} from "./helpers.js";
+    import {isQuestionVisible, questionIndex} from "./helpers.js";
     import {onMount} from "svelte";
 
     export let data;
 
-    const cards = data.cards;
+    $: card = data?.deck[$questionIndex];
     let loaded = false;
 
     onMount(() => {
@@ -21,10 +21,10 @@
 {/if}
 
 <div id="core">
-    {#if $isQuestionVisible && $questionIndex < cards.length}
+    {#if $isQuestionVisible && card.nature !== 'answer'}
         <div id="question"
              transition:fade={{ duration: 300, easing: t => --t*t*t+1 }}>
-            {displayAnswer ? cards[$questionIndex].question : cards[$questionIndex].answer}
+            {card.content}
         </div>
 
     {/if}

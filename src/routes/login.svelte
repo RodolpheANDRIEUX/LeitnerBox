@@ -35,15 +35,14 @@
         });
 
         const result = deserialize(await response.text());
-        console.log(result);
 
         if (result.type === 'failure') {
             errorMessage = result.data.error;
         }
 
         if (result.type === 'success') {
-            await invalidateAll(); // rerun `load` functions
             loginOn.set(false);
+            await invalidateAll(); // rerun `load` functions
         }
 
         await applyAction(result);

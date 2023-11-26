@@ -1,16 +1,17 @@
 <script>
-    import {isQuestionVisible, lightMode, questionIndex, loginOn, CreateCardFormOn, displayAnswer} from './helpers.js';
+    import {isQuestionVisible, lightMode, questionIndex, loginOn, CreateCardFormOn} from './helpers.js';
     import {fade} from 'svelte/transition';
     import { onMount } from 'svelte';
     import Answer from './Answer.svelte';
+    import { goto } from '$app/navigation';
 
     export let data;
+    $: deck = data?.deck;
 
-    let options = "";
-    let actualQuestionIndex = 1;
-    const total = data.cards.length;
-    let isAnimating = false;
-    let isVisible = true;
+    $: options = deck[$questionIndex].options;
+    let option = "";
+    let swap = 1;
+    $: total = deck.length;
     let mouseX;
     let mouseY;
 
@@ -30,15 +31,12 @@
     // animation
     const duration = 400;
     let startTime;
+    let isAnimating = false;
+    let isVisible = true;
+    let exit = false;
 
     // theme
-    const facesUrls = [
-        'https://cdn.discordapp.com/attachments/399312290333327360/1170043802099142676/ADCreHftsZ38XDjg1HNh46SStWXSrvkUhHfjU0_-cYlpnAVXZy3ZKcaz4CP2VkWJo5xOsIcXT-1y7UwqGzM9Nlq7eRZ2ZZZAL0SLNaSzu_5N6voOoGISjW9mfRt4LgeND4oc7zj1_pM1fZp8ajBZA6YCw-KLX1wJGlq5mtq0Rhw2iO-_hhA5ksLz0SmuEP1w3H9BX5A6-Xpy3JZpf4MyWyYE2Wddf78XolXikilv8Fcq0PTuZ04wVWJg_WS_P2bWrOBQ8QqNF_KU9Eum2F6q1NsYOFBdwWHPRRnwi0lsNiPNlpSIN9r4ufPzwgIrB-WWxMZpG2j-d53UtNPUsEFXd1DspuwbE9bnNOau2JLmaYr2q1Cv-SE7r0WJ-KRyH2VPCTP9fjYZ4mOgY6yj2e4oYQpMDrfLw9hgoPjT68ANHo_kEiXx876rVdm4nUrYDLiEZ5EjfSZRv2xGFFeirWytVDyh6nJqzzg8yWRuv6q_xsn4Pds0o4rdUQEHRlKb..png?ex=65579b34&is=65452634&hm=90344b3f38732533236b9780ad7be503b069de822168e0bb9790c03b4a2c566b&',
-        'https://cdn.discordapp.com/attachments/399312290333327360/1170028348479643789/image.png?ex=65578cd0&is=654517d0&hm=4c4b918818372636dbe9a9826134033eae48b2390ae868afa6b064f2df1dc057&',
-        'https://cdn.discordapp.com/attachments/399312290333327360/1170028496823779368/image.png?ex=65578cf3&is=654517f3&hm=d08dd52c40671fb1b232bdc6d16d41a3a00d1a9e9c4a71508549ba9604eeb4e4&',
-        'https://cdn.discordapp.com/attachments/399312290333327360/1170028577190854708/image.png?ex=65578d06&is=65451806&hm=6a9f9f76744d7d01dab661a44aa632572310846adf706aca6d880f5b0135e7dc&',
-        'https://cdn.discordapp.com/attachments/399312290333327360/1170028660913348659/image.png?ex=65578d1a&is=6545181a&hm=1c982a5252048821e56a5ed784628b51e2e75ffc2397784a46d0c8926194e9ce&'
-    ];
+    const facesUrls = data?.theme;
     let faceIndex = 1;
     let currentBackgroundUrl = facesUrls[faceIndex];
 
@@ -55,13 +53,13 @@
     });
 
     // throw card animation
-    function animate(timestamp) {
+    async function animate(timestamp) {
         if (!startTime) startTime = timestamp;
 
         const elapsed = timestamp - startTime;
         const progress = Math.min(elapsed / duration, 1);
 
-        rotation = initialRotation + (initialRotation*10 - initialRotation) * progress;
+        rotation = initialRotation + (initialRotation * 10 - initialRotation) * progress;
         currentTranslateX = initialTranslateX + (targetTranslateX - initialTranslateX) * progress;
         currentTranslateY = initialTranslateY + (targetTranslateY - initialTranslateY) * easeInBack(progress);
 
@@ -69,11 +67,8 @@
             requestAnimationFrame(animate);
         } else {
             startTime = null;
-            console.log($displayAnswer);
-            if ($displayAnswer) {
-                displayAnswer.set(false);
-                nextCard();
-            } else displayAnswer.set(true);
+            await nextCard();
+            if (exit) return;
             isVisible = false;
             resetCardPos();
             requestAnimationFrame(newCard)
@@ -142,9 +137,8 @@
         currentTranslateY = (mouseY / screenHeight)*100 -50;
         rotation = lerp(-50, 50, percentageX) / 3.5;
 
-        options = percentageX > 0.5 ? "I don't know" : "I know !";
+        option = percentageX > 0.5 ? options[0] : options[1];
     }
-
 
     function click(event){
         if (event.clientY <= 70) return; // click on the header disabled
@@ -167,32 +161,42 @@
         requestAnimationFrame(animate); // launch animation
     }
 
-    function nextCard(){
-        actualQuestionIndex ++ ;
-        if ($questionIndex >= data.cards.length) return;
+    async function nextCard(){
+        if ($questionIndex >= deck.length) return;
         isQuestionVisible.set(false);
+        executeAction();
+        if (questionIndex < total) questionIndex.set($questionIndex+1);
         setTimeout(() => {
-            questionIndex.set($questionIndex+1);
             isQuestionVisible.set(true);
         }, 300);
     }
 
-    async function swapLeft(){
-        if (faceIndex < facesUrls.length - 1) {
-            setTimeout(() => {
-                faceIndex++;
-                currentBackgroundUrl = facesUrls[faceIndex];
-            }, duration);
+    function executeAction(){
+        let node = deck[$questionIndex];
+        console.log(node.actions[swap].nature);
+        switch (node.actions[swap].nature) {
+            case "add":
+                questionIndex.set($questionIndex+ node.actions[swap].index);
+                break;
+            case "reset":
+                questionIndex.set(0);
+                break;
+            case "href":
+                goto(node.actions[swap].index);
+                exit = true;
+                break;
+            case "login":
+                loginOn.set(true);
+                break;
         }
     }
 
+    async function swapLeft(){
+        swap = 0;
+    }
+
     async function swapRight(){
-        if (faceIndex > 0) {
-            setTimeout(() => {
-                faceIndex = faceIndex >= 2 ? 1 : faceIndex - 1;
-                currentBackgroundUrl = facesUrls[faceIndex];
-            }, duration);0
-        }
+        swap = 1;
     }
 
     function easeInOut(t) {
@@ -211,21 +215,21 @@
 
 </script>
 
-{#if actualQuestionIndex < total || !$displayAnswer && actualQuestionIndex <= total}
+{#if $questionIndex < total-1}
     <div id="cardDeck" class={$lightMode ? "light-mode card backCard" : "card backCard"}></div>
 {/if}
 
-{#if isVisible && actualQuestionIndex <= total }
+{#if isVisible && $questionIndex <= total-1 }
     <div id="outer-card">
         <div class="card" id="cardFrame" style="transform: translate({currentTranslateX}%, {currentTranslateY}px) rotate({-rotation}deg) rotateY({Yrotation}deg) rotateX({Xrotation}deg);">
             <div id="front">
                 <div id="face" style="background-image: url({currentBackgroundUrl});">
-                    {#if $displayAnswer}
-                        <Answer {data}/>
+                    {#if deck[$questionIndex].nature === "answer"}
+                        <Answer node={deck[$questionIndex]} />
                     {:else if !isAnimating}
                         <div id="answerOverlay" transition:fade={{ duration: 200 }}
                              style="transform: translate(-25%, {-100 + (Math.abs(rotation * 3))}%) rotate({rotation}deg);">
-                            <span id="answer" style="transform: translate(-50%, 0);">{options}</span>
+                            <span id="answer" style="transform: translate(-50%, 0);">{option}</span>
                         </div>
                     {/if}
                 </div>
