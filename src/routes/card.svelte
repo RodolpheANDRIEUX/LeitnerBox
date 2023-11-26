@@ -1,8 +1,8 @@
 <script>
-    import {isQuestionVisible, lightMode, questionIndex, loginOn, CreateCardFormOn} from './helpers.js';
+    import {isQuestionVisible, lightMode, questionIndex, loginOn, CreateCardFormOn}  from "$lib/store.js";
     import {fade} from 'svelte/transition';
     import { onMount } from 'svelte';
-    import Answer from './Answer.svelte';
+    import Answer from './answer.svelte';
     import { goto } from '$app/navigation';
 
     export let data;
@@ -173,7 +173,7 @@
 
     function executeAction(){
         let node = deck[$questionIndex];
-        console.log(node.actions[swap].nature);
+
         switch (node.actions[swap].nature) {
             case "add":
                 questionIndex.set($questionIndex+ node.actions[swap].index);

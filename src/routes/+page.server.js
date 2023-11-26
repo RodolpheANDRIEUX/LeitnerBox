@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { db } from "$lib/db";
 import { userLogin } from "/prisma/user.js";
-import { setAuthToken } from "./helpers.js";
+import { setAuthToken } from "$lib/store.js";
 import {fail} from "@sveltejs/kit";
 
 class Action {

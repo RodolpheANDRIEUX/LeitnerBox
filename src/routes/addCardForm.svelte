@@ -1,6 +1,6 @@
 <script>
     import {fade, slide} from "svelte/transition";
-    import {lightMode} from "./helpers.js";
+    import {lightMode}  from "$lib/store.js";
 
     let errorMessage = '';
 

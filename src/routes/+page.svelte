@@ -2,7 +2,7 @@
     import Progress from "./progress.svelte";
     import Card from "./card.svelte";
     import {fade} from 'svelte/transition';
-    import {isQuestionVisible, questionIndex} from "./helpers.js";
+    import {isQuestionVisible, questionIndex} from "$lib/store.js";
     import {onMount} from "svelte";
 
     export let data;

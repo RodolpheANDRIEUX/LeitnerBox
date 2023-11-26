@@ -1,6 +1,6 @@
 <script>
     import {fade, slide} from "svelte/transition";
-    import {CreateCardFormOn, lightMode, loginOn} from "./helpers.js";
+    import {CreateCardFormOn, lightMode, loginOn}  from "$lib/store.js";
     import {applyAction, deserialize} from "$app/forms";
     import {invalidateAll} from "$app/navigation";
 
