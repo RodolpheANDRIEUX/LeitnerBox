@@ -1,17 +1,17 @@
 <script>
     import {isQuestionVisible, lightMode, questionIndex, loginOn, CreateCardFormOn} from './helpers.js';
     import {fade} from 'svelte/transition';
-    import { onMount } from 'svelte';
+    import {onMount, tick} from 'svelte';
     import Answer from './Answer.svelte';
     import { goto } from '$app/navigation';
 
     export let data;
     $: deck = data?.deck;
+    $: card = deck ? deck[$questionIndex] : null;
 
-    $: options = deck[$questionIndex].options;
+    $: total = deck.length;
     let option = "";
     let swap = 1;
-    $: total = deck.length;
     let mouseX;
     let mouseY;
 
@@ -36,9 +36,9 @@
     let exit = false;
 
     // theme
-    const facesUrls = data?.theme;
+    $: facesUrls = data?.theme;
     let faceIndex = 1;
-    let currentBackgroundUrl = facesUrls[faceIndex];
+    $: currentBackgroundUrl = facesUrls[faceIndex];
 
     onMount(() => {
         // preload images
@@ -50,6 +50,8 @@
         // event listeners
         document.body.addEventListener('mousemove', handleMouseMove);
         document.body.addEventListener('click', click);
+
+        console.log(card);
     });
 
     // throw card animation
@@ -71,6 +73,8 @@
             if (exit) return;
             isVisible = false;
             resetCardPos();
+            let screenWidth = window.innerWidth;
+            defineOption(1 - (mouseX / screenWidth));
             requestAnimationFrame(newCard)
         }
     }
@@ -136,8 +140,7 @@
         currentTranslateX = -50 - rotation*2;
         currentTranslateY = (mouseY / screenHeight)*100 -50;
         rotation = lerp(-50, 50, percentageX) / 3.5;
-
-        option = percentageX > 0.5 ? options[0] : options[1];
+        defineOption(percentageX);
     }
 
     function click(event){
@@ -161,32 +164,59 @@
         requestAnimationFrame(animate); // launch animation
     }
 
+    function defineOption(x){
+        if (card.answered && card.known) {
+            option = x > 0.5 ? "That's what i thought !" : "That was not what i thought...";
+        } else if (card.answered && !card.known) {
+            option = x > 0.5 ? "Ok !" : "Ok !";
+        } else if (card.actions) {
+            option = x > 0.5 ? card.actions[0] : card.actions[1];
+        } else {
+            option = x > 0.5 ? "I know" : "I don't know";
+        }
+    }
+
     async function nextCard(){
         if ($questionIndex >= deck.length) return;
         isQuestionVisible.set(false);
-        executeAction();
-        if (questionIndex < total) questionIndex.set($questionIndex+1);
+
+        console.log("card avant: ", $questionIndex, "/", total);
+        console.log(card);
+
+        card.actions ? executeActions() : handleCard();
+
+        await tick();
+
         setTimeout(() => {
             isQuestionVisible.set(true);
         }, 300);
+
+        console.log("card apres: ", $questionIndex, "/", total);
+        console.log(card);
     }
 
-    function executeAction(){
-        let node = deck[$questionIndex];
-        console.log(node.actions[swap].nature);
-        switch (node.actions[swap].nature) {
-            case "add":
-                questionIndex.set($questionIndex+ node.actions[swap].index);
-                break;
-            case "reset":
-                questionIndex.set(0);
-                break;
-            case "href":
-                goto(node.actions[swap].index);
-                exit = true;
-                break;
-            case "login":
+    function handleCard(){
+        if (!card.answered) {
+            card.answered = true;
+            swap === 0 ? card.known = true : card.known = false;
+        }
+        else if (!card.known) {
+            console.log("on remet la carte a la fin du deck");
+            if ($questionIndex < total) questionIndex.set($questionIndex+1);
+        } else {
+            swap === 0 ? console.log("parfait") : console.log("dommage");
+            if ($questionIndex < total) questionIndex.set($questionIndex+1);
+        }
+    }
+
+    function executeActions(){
+        console.log("card action found", card.actions);
+        switch (card.actions[swap]) {
+            case "log in":
                 loginOn.set(true);
+                break;
+            case "Sign up":
+                goto("/sign_up");
                 break;
         }
     }
@@ -224,9 +254,10 @@
         <div class="card" id="cardFrame" style="transform: translate({currentTranslateX}%, {currentTranslateY}px) rotate({-rotation}deg) rotateY({Yrotation}deg) rotateX({Xrotation}deg);">
             <div id="front">
                 <div id="face" style="background-image: url({currentBackgroundUrl});">
-                    {#if deck[$questionIndex].nature === "answer"}
-                        <Answer node={deck[$questionIndex]} />
-                    {:else if !isAnimating}
+                    {#if card.answered}
+                        <Answer card={card} />
+                    {/if}
+                    {#if !isAnimating}
                         <div id="answerOverlay" transition:fade={{ duration: 200 }}
                              style="transform: translate(-25%, {-100 + (Math.abs(rotation * 3))}%) rotate({rotation}deg);">
                             <span id="answer" style="transform: translate(-50%, 0);">{option}</span>

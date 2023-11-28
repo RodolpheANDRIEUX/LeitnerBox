@@ -21,10 +21,10 @@
 {/if}
 
 <div id="core">
-    {#if $isQuestionVisible && card.nature !== 'answer'}
+    {#if $isQuestionVisible}
         <div id="question"
              transition:fade={{ duration: 300, easing: t => --t*t*t+1 }}>
-            {card.content}
+            {card.question}
         </div>
 
     {/if}

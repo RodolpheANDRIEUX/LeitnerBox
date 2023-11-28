@@ -1,11 +1,10 @@
 <script>
-    export let node;
+    export let card;
 
-    console.log(node);
 </script>
 
 <div id="background">
-    <div id="answer">{node?.content}</div>
+    <div id="answer">{card?.answer}</div>
 </div>
 
 <style>
