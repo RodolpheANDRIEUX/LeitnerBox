@@ -185,12 +185,11 @@
 
         card.actions ? executeActions() : handleCard();
 
-        await tick();
-
         setTimeout(() => {
             isQuestionVisible.set(true);
         }, 300);
 
+        await tick();
         console.log("card apres: ", $questionIndex, "/", total);
         console.log(card);
     }
@@ -245,7 +244,7 @@
 
 </script>
 
-{#if $questionIndex < total-1}
+{#if $questionIndex < total-1 || !card.answered}
     <div id="cardDeck" class={$lightMode ? "light-mode card backCard" : "card backCard"}></div>
 {/if}
 
