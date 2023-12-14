@@ -1,11 +1,19 @@
 import { writable } from "svelte/store";
 
+// style
 export const lightMode = writable(false);
-export const questionIndex = writable(0);
 export const isQuestionVisible = writable(true);
+
+// modals
 export const loginOn = writable(false);
 export const CreateCardFormOn = writable(false);
+
+// user
 export const token = writable(null);
+
+// deck
+export const deckStore = writable([]);
+export const deckIndex = writable(0);
 
 export const setAuthToken = ({ cookies, token }) => {
   cookies.set("AuthorizationToken", `Bearer ${token}`, {

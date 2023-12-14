@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { db } from "$lib/db";
-import { userLogin } from "/prisma/user.js";
-import { setAuthToken } from "./helpers.js";
+import {getUserIdFromToken, userLogin} from "/prisma/user.js";
+import { setAuthToken } from "$lib/store.js";
 import {fail} from "@sveltejs/kit";
 
 class Card {
@@ -27,19 +27,7 @@ export async function load({ locals }) {
 
   if (user){
     console.log("User trouvé dans cookies: ", user);
-    // gets every user 1 cards
-    let cards = await db.cards.findMany({ where: { userId: 1 } }); //TODO mettre un userID dynamique
-
-    // convert every card into a Card object
-    cards.forEach(card => {
-      deck.push({
-        question: card.question,
-        answer: card.answer,
-        answered: false,
-        known: false,
-        actions: null
-      });
-    });
+    deck = await getDeckForUser(user.id);
 
   } else {
     console.log("User non trouvé dans cookies");
@@ -98,10 +86,28 @@ export const actions = {
     const password = data.get("password");
 
     const { error, token } = await userLogin(mail, password);
-    if (error) {
+
+    if (!error) {
+      setAuthToken({ cookies, token });
+
+      const userId = await getUserIdFromToken(token);
+      let deck = await getDeckForUser(1); // TODO: use 'userId' instead of 1
+
+      console.log("deck (by login): ", deck);
+      return { deck };
+    } else {
       return fail(500, {error});
     }
-
-    setAuthToken({ cookies, token });
   },
 };
+
+async function getDeckForUser(userId) {
+  let userCards = await db.cards.findMany({ where: { userId } });
+  return userCards.map(card => ({
+    question: card.question,
+    answer: card.answer,
+    answered: false,
+    known: false,
+    actions: null
+  }));
+}

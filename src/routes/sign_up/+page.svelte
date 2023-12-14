@@ -2,7 +2,7 @@
     import {fade, slide} from "svelte/transition";
     import {applyAction, deserialize} from "$app/forms";
     import {invalidateAll} from "$app/navigation";
-    import {lightMode, loginOn} from "../helpers.js";
+    import {lightMode, loginOn} from "$lib/store.js";
 
     let fields = {
         'username': '',

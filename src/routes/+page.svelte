@@ -2,15 +2,19 @@
     import Progress from "./progress.svelte";
     import Card from "./card.svelte";
     import {fade} from 'svelte/transition';
-    import {isQuestionVisible, questionIndex} from "./helpers.js";
+    import {isQuestionVisible, deckIndex, deckStore } from "$lib/store.js";
     import {onMount} from "svelte";
 
     export let data;
 
-    $: card = data?.deck[$questionIndex];
     let loaded = false;
 
     onMount(() => {
+        console.log('Data: ', data);
+        if (data && data.deck) {
+            deckStore.set(data.deck);
+        }
+
         loaded = true;
     });
 
@@ -21,10 +25,10 @@
 {/if}
 
 <div id="core">
-    {#if $isQuestionVisible}
+    {#if $isQuestionVisible && $deckStore[$deckIndex]}
         <div id="question"
              transition:fade={{ duration: 300, easing: t => --t*t*t+1 }}>
-            {card.question}
+            {$deckStore[$deckIndex]?.question}
         </div>
 
     {/if}

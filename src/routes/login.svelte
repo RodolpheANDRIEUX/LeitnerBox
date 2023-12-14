@@ -1,10 +1,8 @@
 <script>
     import {fade, slide} from "svelte/transition";
-    import {CreateCardFormOn, lightMode, loginOn} from "./helpers.js";
+    import {CreateCardFormOn, lightMode, loginOn, deckStore} from "$lib/store.js";
     import {applyAction, deserialize} from "$app/forms";
     import {invalidateAll} from "$app/navigation";
-
-    // export let form;
 
     let fields = {
         'mail': '',
@@ -41,8 +39,10 @@
         }
 
         if (result.type === 'success') {
+            console.log(result.data.deck);
+            deckStore.set(result.data.deck);
             loginOn.set(false);
-            await invalidateAll(); // rerun `load` functions
+            await invalidateAll(); // rerun `load` functions just in case
         }
 
         await applyAction(result);

@@ -1,4 +1,4 @@
-import { setAuthToken } from "../helpers.js";
+import { setAuthToken } from "$lib/store.js";
 import { createUser } from "/prisma/user.js";
 import { redirect } from "@sveltejs/kit";
 

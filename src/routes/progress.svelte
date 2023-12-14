@@ -1,10 +1,7 @@
 <script>
-    import {lightMode, questionIndex} from "./helpers.js";
+    import {lightMode, deckIndex, deckStore} from "$lib/store.js";
 
-    export let data;
-
-    const total = data.deck.length;
-    $: progressWidth = ($questionIndex / total) * 100;
+    $: progressWidth = ($deckIndex / $deckStore.length) * 100;
 </script>
 
 <div id="bg" class={$lightMode ? "light-mode" : ""}></div>

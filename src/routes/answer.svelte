@@ -1,10 +1,10 @@
 <script>
-    export let card;
+    import { deckStore, deckIndex} from "$lib/store.js";
 
 </script>
 
 <div id="background">
-    <div id="answer">{card?.answer}</div>
+    <div id="answer">{$deckStore[$deckIndex]?.answer}</div>
 </div>
 
 <style>

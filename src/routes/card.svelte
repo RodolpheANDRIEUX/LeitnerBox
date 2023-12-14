@@ -1,15 +1,14 @@
 <script>
-    import {isQuestionVisible, lightMode, questionIndex, loginOn, CreateCardFormOn} from './helpers.js';
+    import {isQuestionVisible, lightMode, deckIndex, loginOn, CreateCardFormOn, deckStore} from '$lib/store.js';
     import {fade} from 'svelte/transition';
     import {onMount, tick} from 'svelte';
-    import Answer from './Answer.svelte';
+    import Answer from './answer.svelte';
     import { goto } from '$app/navigation';
 
     export let data;
-    $: deck = data?.deck;
-    $: card = deck ? deck[$questionIndex] : null;
+    $: card = $deckStore ? $deckStore[$deckIndex] : null;
 
-    $: total = deck.length;
+    $: total = $deckStore ? $deckStore.length : 0;
     let option = "";
     let swap = 1;
     let mouseX;
@@ -164,12 +163,13 @@
         requestAnimationFrame(animate); // launch animation
     }
 
+    // pour x etant la position du curseur sur l'axe X allant de 0 à 1
     function defineOption(x){
-        if (card.answered && card.known) {
+        if (card && card.answered && card.known) {
             option = x > 0.5 ? "That's what i thought !" : "That was not what i thought...";
-        } else if (card.answered && !card.known) {
+        } else if (card && card.answered && !card.known) {
             option = x > 0.5 ? "Ok !" : "Ok !";
-        } else if (card.actions) {
+        } else if (card && card.actions) {
             option = x > 0.5 ? card.actions[0] : card.actions[1];
         } else {
             option = x > 0.5 ? "I know" : "I don't know";
@@ -177,10 +177,10 @@
     }
 
     async function nextCard(){
-        if ($questionIndex >= deck.length) return;
+        if ($deckIndex >= total) return;
         isQuestionVisible.set(false);
 
-        console.log("card avant: ", $questionIndex, "/", total);
+        console.log("card avant: ", $deckIndex, "/", total);
         console.log(card);
 
         card.actions ? executeActions() : handleCard();
@@ -190,7 +190,7 @@
         }, 300);
 
         await tick();
-        console.log("card apres: ", $questionIndex, "/", total);
+        console.log("card apres: ", $deckIndex, "/", total);
         console.log(card);
     }
 
@@ -198,14 +198,27 @@
         if (!card.answered) {
             card.answered = true;
             swap === 0 ? card.known = true : card.known = false;
+            updateStore(card, $deckIndex);
         }
         else if (!card.known) {
-            console.log("on remet la carte a la fin du deck");
-            if ($questionIndex < total) questionIndex.set($questionIndex+1);
+            resetCard()
+            if ($deckIndex < total) deckIndex.set($deckIndex+1);
         } else {
-            swap === 0 ? console.log("parfait") : console.log("dommage");
-            if ($questionIndex < total) questionIndex.set($questionIndex+1);
+            swap === 0 ? validateCard() : resetCard();
+            if ($deckIndex < total) deckIndex.set($deckIndex+1);
         }
+    }
+
+    function resetCard(){
+        card.answered = false;
+        card.known = false;
+        deckStore.update(deck => {
+            return [...deck, card];
+        });
+    }
+
+    function validateCard(){
+
     }
 
     function executeActions(){
@@ -219,6 +232,15 @@
                 break;
         }
     }
+
+    function updateStore(newCard, index) {
+        deckStore.update(deck => {
+            let updatedDeck = [...deck];
+            updatedDeck[index] = newCard;
+            return updatedDeck;
+        });
+    }
+
 
     async function swapLeft(){
         swap = 0;
@@ -242,19 +264,20 @@
     }
 
 
+
 </script>
 
-{#if $questionIndex < total-1 || !card.answered}
+{#if  $deckIndex < total || card && !card.answered}
     <div id="cardDeck" class={$lightMode ? "light-mode card backCard" : "card backCard"}></div>
 {/if}
 
-{#if isVisible && $questionIndex <= total-1 }
+{#if isVisible && $deckIndex < total }
     <div id="outer-card">
         <div class="card" id="cardFrame" style="transform: translate({currentTranslateX}%, {currentTranslateY}px) rotate({-rotation}deg) rotateY({Yrotation}deg) rotateX({Xrotation}deg);">
             <div id="front">
                 <div id="face" style="background-image: url({currentBackgroundUrl});">
-                    {#if card.answered}
-                        <Answer card={card} />
+                    {#if card && card.answered}
+                        <Answer />
                     {/if}
                     {#if !isAnimating}
                         <div id="answerOverlay" transition:fade={{ duration: 200 }}
@@ -318,11 +341,6 @@
         background-size: cover;
         border-radius: 3vh;
         box-shadow: inset 0 0 0 8px #13131380;
-    }
-
-    .light-mode#cardDeck,
-    #back.light-mode {
-        background: #e1e1e1;
     }
 
     #face {

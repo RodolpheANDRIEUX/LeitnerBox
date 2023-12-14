@@ -19,7 +19,7 @@ model Cards {
   id        Int      @id @default(autoincrement())
   question  String
   answer    String
-  cases     Int      @default(1)
+  level     Int      @default(1)
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())

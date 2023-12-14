@@ -79,3 +79,13 @@ export async function userLogin(email, password) {
     console.log(error);
   }
 }
+
+export async function getUserIdFromToken(token) {
+  try {
+    const decoded = jwt.verify(token, JWT_ACCESS_SECRET);
+    console.log("decoded:", decoded); //debug
+    return decoded.id;
+  } catch (err) {
+    return null;
+  }
+}
