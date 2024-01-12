@@ -102,7 +102,9 @@ export const actions = {
     }
 
     try {
-      const cardLevel = await db.cards.findUnique({ where: { id: parseInt(cardId) } }).level;
+      const card = await db.cards.findUnique({ where: { id: parseInt(cardId) } });
+      const cardLevel = card.level;
+      console.log("card level: ", cardLevel);
       const updatedCard = await db.cards.update({
         where: { id: parseInt(cardId) },
         data: { level: { increment: 1 }, displayAt: calculateDisplayAt(cardLevel) }
@@ -122,7 +124,7 @@ async function getDeckForUser(userId) {
     where: {
       userId: userId,
       displayAt: {
-        gte: today
+        lte: today
       }
     }
   });
