@@ -44,42 +44,42 @@
 
     function validateForm(event) {
 
-        for (let key in fields) {
-            if (!fields[key]) {
-                errorMessage = `${key} is required`;
-                return false;
-            }
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(fields.mail)){
-            errorMessage = 'The email address is not valid.';
-            return false;
-        }
-
-        if (!fields.mail.includes('@')) {
-            errorMessage = 'The email address is not valid.';
-            return false;
-        }
-
-        const hasUppercase = /[A-Z]/.test(fields.password);
-        const hasLowercase = /[a-z]/.test(fields.password);
-        const hasDigits = /\d/.test(fields.password);
-
-        if (!hasUppercase || !hasLowercase || !hasDigits) {
-            errorMessage = 'The password must contain at least one uppercase letter, one lowercase letter, and one digit.';
-            return false;
-        }
-
-        if (fields.password.length < 8) {
-            errorMessage = 'The password must be at least 8 characters long';
-            return false;
-        }
-
-        if (fields.password !== fields['confirm password']) {
-            errorMessage = 'Passwords do not match.';
-            return false;
-        }
+        // for (let key in fields) {
+        //     if (!fields[key]) {
+        //         errorMessage = `${key} is required`;
+        //         return false;
+        //     }
+        // }
+        //
+        // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // if (!emailRegex.test(fields.mail)){
+        //     errorMessage = 'The email address is not valid.';
+        //     return false;
+        // }
+        //
+        // if (!fields.mail.includes('@')) {
+        //     errorMessage = 'The email address is not valid.';
+        //     return false;
+        // }
+        //
+        // const hasUppercase = /[A-Z]/.test(fields.password);
+        // const hasLowercase = /[a-z]/.test(fields.password);
+        // const hasDigits = /\d/.test(fields.password);
+        //
+        // if (!hasUppercase || !hasLowercase || !hasDigits) {
+        //     errorMessage = 'The password must contain at least one uppercase letter, one lowercase letter, and one digit.';
+        //     return false;
+        // }
+        //
+        // if (fields.password.length < 8) {
+        //     errorMessage = 'The password must be at least 8 characters long';
+        //     return false;
+        // }
+        //
+        // if (fields.password !== fields['confirm password']) {
+        //     errorMessage = 'Passwords do not match.';
+        //     return false;
+        // }
 
         return true;
     }

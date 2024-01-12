@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 import { db } from "$lib/db.js";
-import { fail } from "@sveltejs/kit";
 import jwt from "jsonwebtoken";
 import { JWT_ACCESS_SECRET } from "$env/static/private";
 
@@ -10,7 +9,7 @@ function createJWT(user) {
       { id: user.id, email: user.email, name: user.name },
       JWT_ACCESS_SECRET,
       {
-        expiresIn: "1d",
+        expiresIn: "90d",
       },
   );
 }

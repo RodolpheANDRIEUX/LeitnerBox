@@ -1,9 +1,9 @@
 <script>
-    import {isQuestionVisible, lightMode, deckIndex, loginOn, CreateCardFormOn, deckStore} from '$lib/store.js';
+    import {CreateCardFormOn, deckIndex, deckStore, isQuestionVisible, lightMode, loginOn} from '$lib/store.js';
     import {fade} from 'svelte/transition';
     import {onMount, tick} from 'svelte';
     import Answer from './answer.svelte';
-    import { goto } from '$app/navigation';
+    import {goto} from '$app/navigation';
 
     export let data;
     $: card = $deckStore ? $deckStore[$deckIndex] : null;
@@ -199,12 +199,13 @@
             card.answered = true;
             swap === 0 ? card.known = true : card.known = false;
             updateStore(card, $deckIndex);
+
         }
         else if (!card.known) {
             resetCard()
             if ($deckIndex < total) deckIndex.set($deckIndex+1);
         } else {
-            swap === 0 ? validateCard() : resetCard();
+            swap === 0 ? validateCard(card.id) : resetCard();
             if ($deckIndex < total) deckIndex.set($deckIndex+1);
         }
     }
@@ -217,8 +218,13 @@
         });
     }
 
-    function validateCard(){
+    async function validateCard(cardId) {
+        const response = await fetch('?/updateCardLevel', {
+            method: 'POST',
+            body: cardId
+        });
 
+        console.log(response);
     }
 
     function executeActions(){

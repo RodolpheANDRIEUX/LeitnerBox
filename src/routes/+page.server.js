@@ -3,16 +3,8 @@ import { db } from "$lib/db";
 import {getUserIdFromToken, userLogin} from "/prisma/user.js";
 import { setAuthToken } from "$lib/store.js";
 import {fail} from "@sveltejs/kit";
+import { addDays, addMonths, addYears } from 'date-fns';
 
-class Card {
-  constructor(question, answer, answered, known, actions) {
-    this.question = question; // string
-    this.answer = answer; // string
-    this.answered = answered; // boolean
-    this.known = known; // boolean
-    this.actions = actions; // tableau de 2 strings
-  }
-}
 
 export async function load({ locals }) {
   const theme = [
@@ -66,6 +58,7 @@ function getUserIdFromRequest(request) {
   }
 }
 
+
 export const actions = {
   createCard: async ({ request }) => {
     const userId = getUserIdFromRequest(request);
@@ -91,7 +84,7 @@ export const actions = {
       setAuthToken({ cookies, token });
 
       const userId = await getUserIdFromToken(token);
-      let deck = await getDeckForUser(1); // TODO: use 'userId' instead of 1
+      let deck = await getDeckForUser(userId);
 
       console.log("deck (by login): ", deck);
       return { deck };
@@ -99,15 +92,70 @@ export const actions = {
       return fail(500, {error});
     }
   },
+  updateCardLevel: async ({ request }) => {
+    console.log("updateCard action called");
+    const cardId = await request.text();
+    console.log("card id: ", cardId);
+
+    if (isNaN(parseInt(cardId))) {
+      return { status: 400, body: { error: "Invalid card ID" } };
+    }
+
+    try {
+      const cardLevel = await db.cards.findUnique({ where: { id: parseInt(cardId) } }).level;
+      const updatedCard = await db.cards.update({
+        where: { id: parseInt(cardId) },
+        data: { level: { increment: 1 }, displayAt: calculateDisplayAt(cardLevel) }
+      });
+      console.log("updated card: ", updatedCard);
+      return { body: { updatedCard } };
+    } catch (error) {
+      return { status: 500, body: { error: `Error while updating the card level: ${error.message}` } };
+    }
+  },
 };
 
 async function getDeckForUser(userId) {
-  let userCards = await db.cards.findMany({ where: { userId } });
+  const today = new Date();
+
+  let userCards = await db.cards.findMany({
+    where: {
+      userId: userId,
+      displayAt: {
+        gte: today
+      }
+    }
+  });
+
   return userCards.map(card => ({
+    id: card.id,
     question: card.question,
     answer: card.answer,
     answered: false,
     known: false,
     actions: null
   }));
+}
+
+
+function calculateDisplayAt(level) {
+  const now = new Date();
+  switch (level) {
+    case 1:
+      return addDays(now, 1);
+    case 2:
+      return addDays(now, 3);
+    case 3:
+      return addDays(now, 7);
+    case 4:
+      return addDays(now, 20);
+    case 5:
+      return addMonths(now, 2);
+    case 6:
+      return addMonths(now, 6);
+    case 7:
+      return addYears(now, 1);
+    default:
+      return now;
+  }
 }
